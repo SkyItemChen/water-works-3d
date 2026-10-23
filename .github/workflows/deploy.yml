@@ -57,11 +57,11 @@ jobs:
           VITE_BASE: ${{ steps.base.outputs.base }}
         run: npm run build
 
-      # enablement: true lets the action create the Pages site itself, so a fresh
-      # repository does not need a manual Settings -> Pages toggle first.
+      # NOTE: enablement: true is deliberately NOT set. It requires a token other
+      # than GITHUB_TOKEN (PAT with repo scope, or GitHub App with
+      # administration:write), so it cannot bootstrap Pages from this workflow.
+      # Enable Pages once by hand: Settings -> Pages -> Source -> "GitHub Actions".
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
