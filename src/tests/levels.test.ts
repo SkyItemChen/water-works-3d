@@ -92,21 +92,28 @@ export function playGreedy(levelId: string): BotResult {
   };
 }
 
+// Solvability runs are minutes of straight-line synchronous work. Yielding
+// between levels lets the vitest worker flush its progress RPC, which
+// otherwise times out ("Timeout calling onTaskUpdate") on slow CI runners.
+const yieldToRunner = () => new Promise<void>((resolve) => setImmediate(resolve));
+
 describe('level solvability', () => {
-  it('every contract level can be cleared by a simple greedy player', () => {
-    const results = contractLevels().map((l) => ({ level: l, result: playGreedy(l.id) }));
-    for (const { level, result } of results) {
+  it('every contract level can be cleared by a simple greedy player', async () => {
+    for (const level of contractLevels()) {
+      const result = playGreedy(level.id);
       expect(
         result.status,
         `${level.id} ${level.name}: ${result.reason} (clean ${result.clean.toFixed(1)}, dirty ${result.dirty.toFixed(1)})`,
       ).toBe('won');
+      await yieldToRunner();
     }
   }, 300000);
 
-  it('the greedy player stays within the block budget', () => {
+  it('the greedy player stays within the block budget', async () => {
     for (const level of contractLevels()) {
       const r = playGreedy(level.id);
       expect(r.blocks, `${level.id} used ${r.blocks}/${level.blockLimit}`).toBeLessThanOrEqual(level.blockLimit);
+      await yieldToRunner();
     }
   }, 300000);
 });

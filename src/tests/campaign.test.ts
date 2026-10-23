@@ -131,19 +131,25 @@ describe('campaign ladder', () => {
 describe('new contracts are beatable and par-tight', () => {
   const added = contractLevels().filter((l) => Number(l.id.slice(1)) >= 13);
 
+  // Each play() call is many seconds of synchronous bot search. Yielding between
+  // levels lets the vitest worker flush its progress RPC, which otherwise times
+  // out ("Timeout calling onTaskUpdate") on slow CI runners.
+  const yieldToRunner = () => new Promise<void>((resolve) => setImmediate(resolve));
+
   it('covers 18 new levels', () => {
     expect(added.length).toBe(18);
   });
 
-  it('each new level is clearable by the reference bot', () => {
+  it('each new level is clearable by the reference bot', async () => {
     for (const l of added) {
       const run = play(l);
       expect(run.status, `${l.id} ${l.name}: ${run.failureReason || '-'}`).toBe('won');
       expect(run.blocksUsed, `${l.id} used ${run.blocksUsed}/${l.blockLimit}`).toBeLessThanOrEqual(l.blockLimit);
+      await yieldToRunner();
     }
   }, 600000);
 
-  it('each new level actually drains what its goal asks for', () => {
+  it('each new level actually drains what its goal asks for', async () => {
     for (const l of added) {
       const run = play(l);
       for (const g of l.goals) {
@@ -154,10 +160,11 @@ describe('new contracts are beatable and par-tight', () => {
           expect(run.ledger.drainedDirty, `${l.id} dirty`).toBeGreaterThanOrEqual(amount);
         }
       }
+      await yieldToRunner();
     }
   }, 600000);
 
-  it('a three-star par leaves room but is not free', () => {
+  it('a three-star par leaves room but is not free', async () => {
     for (const l of added) {
       const run = play(l);
       // Par must be achievable (the bot's own count is the reference)...
@@ -165,6 +172,7 @@ describe('new contracts are beatable and par-tight', () => {
       // ...and a level must still be losable, i.e. the goal is not met with a
       // single block: the budget has to be meaningfully larger than that.
       expect(l.blockLimit, l.id).toBeGreaterThan(3);
+      await yieldToRunner();
     }
   }, 600000);
 });

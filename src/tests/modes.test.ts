@@ -65,7 +65,12 @@ function playGreedy(level: LevelDefinition, maxMoves: number, mode: GameMode = '
 }
 
 describe('daily and endless playability', () => {
-  it('daily challenges are seeded, dry, and at least most days are winnable', () => {
+  // playGreedy() is many seconds of synchronous work. Yielding between runs lets
+  // the vitest worker flush its progress RPC, which otherwise times out
+  // ("Timeout calling onTaskUpdate") on slow CI runners.
+  const yieldToRunner = () => new Promise<void>((resolve) => setImmediate(resolve));
+
+  it('daily challenges are seeded, dry, and at least most days are winnable', async () => {
     const days = ['2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24'];
     let wins = 0;
     for (const day of days) {
@@ -76,6 +81,7 @@ describe('daily and endless playability', () => {
       expect(level.initialWater ?? []).toEqual([]);
       const res = playGreedy(level, 20, 'daily');
       if (res.status === 'won') wins++;
+      await yieldToRunner();
     }
     expect(wins, `only ${wins}/${days.length} daily runs were winnable`).toBeGreaterThanOrEqual(3);
   }, 120000);

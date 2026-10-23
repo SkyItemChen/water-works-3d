@@ -28,5 +28,15 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/tests/**/*.test.ts'],
+    // CI runners are ~4x slower than a dev box. Several solvability tests run
+    // the greedy bot over every contract level, which is tens of seconds of
+    // uninterrupted synchronous work per test.
+    pool: 'forks',
+    poolOptions: {
+      forks: { maxForks: 2, minForks: 1 },
+    },
+    // The bot tests are legitimately slow; per-test budgets already exist, but
+    // keep the hook budget generous so a cold runner never trips it.
+    hookTimeout: 120_000,
   },
 });
