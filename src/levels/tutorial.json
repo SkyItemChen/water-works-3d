@@ -1,0 +1,173 @@
+[
+  {
+    "id": "t01",
+    "index": 1,
+    "name": "教程 · 围池",
+    "subtitle": "第 1 步 · 移动与落块",
+    "mechanic": "左右移动 + 硬降",
+    "intro": "用 ← → 把方块移到池壁两侧，空格硬降。土壤会永久留在井里，替水围出一个池子。",
+    "seed": 21001,
+    "cols": 10,
+    "rows": 16,
+    "drains": [{ "id": 0, "x": 4, "y": 15, "kind": "clean" }],
+    "terrain": [
+      { "x": 0, "y": 15, "m": "soil" },
+      { "x": 9, "y": 15, "m": "soil" },
+      { "x": 0, "y": 14, "m": "soil" },
+      { "x": 9, "y": 14, "m": "soil" },
+      { "x": 3, "y": 15, "m": "soil" },
+      { "x": 5, "y": 15, "m": "soil" }
+    ],
+    "pool": ["soil2", "soil2", "soilL", "pocket", "pocket"],
+    "blockLimit": 10,
+    "fallInterval": 30,
+    "goals": [{ "type": "drainClean", "drainId": 0, "amount": 4 }],
+    "star3Blocks": 4,
+    "tutorial": {
+      "stepId": "t01",
+      "title": "移动与落块",
+      "goalText": "把任意一块土壤放进井里，围出池壁",
+      "hint": "← → 移动，空格直接落地；↑ 或 X 可以旋转 L 形土壤。",
+      "condition": { "kind": "lockKind", "anyOf": ["soil2", "soilL"] },
+      "highlight": { "columns": [3, 4, 5], "hud": ["hud.next"] }
+    }
+  },
+  {
+    "id": "t02",
+    "index": 2,
+    "name": "教程 · 水囊",
+    "subtitle": "第 2 步 · 落地破裂",
+    "mechanic": "水囊注水",
+    "intro": "蓝色的是水囊。它落地就会破裂，把 4 单位清水倒进井里——水量永远守恒，倒出去的每一滴都会留在场内或流走。",
+    "seed": 21002,
+    "cols": 10,
+    "rows": 16,
+    "drains": [{ "id": 0, "x": 4, "y": 15, "kind": "clean" }],
+    "terrain": [
+      { "x": 0, "y": 15, "m": "soil" },
+      { "x": 9, "y": 15, "m": "soil" },
+      { "x": 0, "y": 14, "m": "soil" },
+      { "x": 9, "y": 14, "m": "soil" },
+      { "x": 3, "y": 15, "m": "soil" },
+      { "x": 5, "y": 15, "m": "soil" }
+    ],
+    "pool": ["pocket", "pocket", "soil2", "sponge", "pocket"],
+    "blockLimit": 10,
+    "fallInterval": 30,
+    "goals": [{ "type": "drainClean", "drainId": 0, "amount": 4 }],
+    "star3Blocks": 4,
+    "tutorial": {
+      "stepId": "t02",
+      "title": "水囊落地破裂",
+      "goalText": "把一块蓝色水囊砸进井里，让它破裂注水",
+      "hint": "水囊落在空处就地破裂；落在已经满水的格子上，多余的水会向上找空位。",
+      "condition": { "kind": "lockKind", "anyOf": ["pocket"] },
+      "highlight": { "columns": [4], "hud": ["hud.ledger"] }
+    }
+  },
+  {
+    "id": "t03",
+    "index": 3,
+    "name": "教程 · 排水计分",
+    "subtitle": "第 3 步 · 清水口",
+    "mechanic": "清水进清水口",
+    "intro": "清水流到底部的蓝色排水口就会被排出，每单位 +10 分。水账本里的“已排”会同步上涨。",
+    "seed": 21003,
+    "cols": 10,
+    "rows": 16,
+    "drains": [{ "id": 0, "x": 4, "y": 15, "kind": "clean" }],
+    "terrain": [
+      { "x": 0, "y": 15, "m": "soil" },
+      { "x": 9, "y": 15, "m": "soil" },
+      { "x": 0, "y": 14, "m": "soil" },
+      { "x": 9, "y": 14, "m": "soil" },
+      { "x": 3, "y": 15, "m": "soil" },
+      { "x": 5, "y": 15, "m": "soil" }
+    ],
+    "pool": ["pocket", "soil2", "pocket", "sponge", "pocket"],
+    "blockLimit": 10,
+    "fallInterval": 30,
+    "goals": [{ "type": "drainClean", "drainId": 0, "amount": 4 }],
+    "star3Blocks": 4,
+    "tutorial": {
+      "stepId": "t03",
+      "title": "清水进清水口",
+      "goalText": "让清水真的流进蓝色排水口（水账本“已排”≥ 1）",
+      "hint": "水流顺序固定：先下、再左、再右。水囊对准排水口正上方最省事。",
+      "condition": { "kind": "drainedCleanAtLeast", "amount": 1 },
+      "highlight": { "cells": [{ "x": 4, "y": 15 }], "hud": ["hud.goals"] }
+    }
+  },
+  {
+    "id": "t04",
+    "index": 4,
+    "name": "教程 · 污水",
+    "subtitle": "第 4 步 · 分流与变色",
+    "mechanic": "污水口 + 混色",
+    "intro": "绿褐色的是污水囊。污水只能进绿色污水口；一旦污水碰到清水，整格都会变脏——这就是你要避免的事故。",
+    "seed": 21004,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      { "id": 0, "x": 2, "y": 15, "kind": "clean" },
+      { "id": 1, "x": 7, "y": 15, "kind": "dirty" }
+    ],
+    "terrain": [
+      { "x": 0, "y": 15, "m": "soil" },
+      { "x": 9, "y": 15, "m": "soil" },
+      { "x": 0, "y": 14, "m": "soil" },
+      { "x": 9, "y": 14, "m": "soil" },
+      { "x": 3, "y": 15, "m": "soil" },
+      { "x": 4, "y": 15, "m": "soil" },
+      { "x": 5, "y": 15, "m": "soil" },
+      { "x": 6, "y": 15, "m": "soil" },
+      { "x": 8, "y": 15, "m": "soil" }
+    ],
+    "pool": ["pocketDirty", "pocketDirty", "pocket", "soil2", "pocketDirty"],
+    "blockLimit": 10,
+    "fallInterval": 30,
+    "goals": [{ "type": "drainDirty", "drainId": 1, "amount": 4 }],
+    "star3Blocks": 4,
+    "tutorial": {
+      "stepId": "t04",
+      "title": "污水要单独走",
+      "goalText": "把污水送进绿色污水口（水账本“污水排出”≥ 1）",
+      "hint": "污水进清水口累计 3 单位就输。让污水与清水保持至少一列距离，就不会看到青色混色。",
+      "condition": { "kind": "drainedDirtyAtLeast", "amount": 1 },
+      "highlight": { "cells": [{ "x": 2, "y": 15 }, { "x": 7, "y": 15 }], "hud": ["hud.goals", "hud.ledger"] }
+    }
+  },
+  {
+    "id": "t05",
+    "index": 5,
+    "name": "教程 · 改道",
+    "subtitle": "第 5 步 · 管道与海绵",
+    "mechanic": "管道转向 / 海绵吸水",
+    "intro": "管道会强制改变水流方向，可以旋转；海绵最多吸 2 单位水。两者都是微调水路的工具。",
+    "seed": 21005,
+    "cols": 10,
+    "rows": 16,
+    "drains": [{ "id": 0, "x": 4, "y": 15, "kind": "clean" }],
+    "terrain": [
+      { "x": 0, "y": 15, "m": "soil" },
+      { "x": 9, "y": 15, "m": "soil" },
+      { "x": 0, "y": 14, "m": "soil" },
+      { "x": 9, "y": 14, "m": "soil" },
+      { "x": 3, "y": 15, "m": "soil" },
+      { "x": 5, "y": 15, "m": "soil" }
+    ],
+    "pool": ["pipe", "pipe", "sponge", "pocket", "pocket", "soil2"],
+    "blockLimit": 12,
+    "fallInterval": 30,
+    "goals": [{ "type": "drainClean", "drainId": 0, "amount": 4 }],
+    "star3Blocks": 5,
+    "tutorial": {
+      "stepId": "t05",
+      "title": "管道与海绵",
+      "goalText": "放下一个管道或海绵，试试看它怎么改变水路",
+      "hint": "管道格子上那个深色三角就是箭头，指向水的出路；落定前用 ↑/X 旋转它。海绵吸满 2 单位就失效。",
+      "condition": { "kind": "lockKind", "anyOf": ["pipe", "sponge"] },
+      "highlight": { "columns": [4], "hud": ["hud.hold"] }
+    }
+  }
+]

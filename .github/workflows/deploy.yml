@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 同一时间只跑一个 Pages 发布，但不打断进行中的部署。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      # 项目站挂在 /<repo>/ 下；<user>.github.io 用户站才是 /。
+      - name: Resolve base path
+        id: base
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+          if [[ "$REPO_NAME" == *.github.io ]]; then
+            base="/"
+          else
+            base="/$REPO_NAME/"
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "构建 base 路径：\`$base\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build
+        env:
+          VITE_BASE: ${{ steps.base.outputs.base }}
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

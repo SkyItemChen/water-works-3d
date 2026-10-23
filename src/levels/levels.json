@@ -1,0 +1,4213 @@
+[
+  {
+    "id": "c01",
+    "index": 1,
+    "name": "第一滴",
+    "subtitle": "合同 01 · 把清水送进 A 口",
+    "mechanic": "基础落块与清水口",
+    "intro": "拖动水囊，让它落入 A 口上方的水道。水囊落地会破裂，清水会顺着重力流进排水口。",
+    "seed": 11001,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "soil2",
+      "soil2",
+      "sponge"
+    ],
+    "blockLimit": 10,
+    "fallInterval": 30,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 8
+      }
+    ],
+    "star3Blocks": 4
+  },
+  {
+    "id": "c02",
+    "index": 2,
+    "name": "双口分流",
+    "subtitle": "合同 02 · 两个清水口",
+    "mechanic": "多排水口规划",
+    "intro": "A 口与 B 口都接清水。把水囊分配到两边的水道，避免清水积在中间。",
+    "seed": 11002,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 2,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 7,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "soil2",
+      "sand",
+      "sponge"
+    ],
+    "blockLimit": 12,
+    "fallInterval": 28,
+    "goals": [
+      {
+        "type": "drainClean",
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 5
+  },
+  {
+    "id": "c03",
+    "index": 3,
+    "name": "清污边界",
+    "subtitle": "合同 03 · 污水进 B 口",
+    "mechanic": "清水 / 污水双色",
+    "intro": "绿色水囊装的是污水。污水只能进 B 口；一旦有 3 单位污水流进清水口，合同立即作废。",
+    "seed": 11003,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 2,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 7,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 4,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocketDirty",
+      "pocketDirty",
+      "soil2",
+      "sponge"
+    ],
+    "blockLimit": 14,
+    "fallInterval": 26,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 8
+      }
+    ],
+    "star3Blocks": 6
+  },
+  {
+    "id": "c04",
+    "index": 4,
+    "name": "沙上行走",
+    "subtitle": "合同 04 · 沙块会被压塌",
+    "mechanic": "沙块 · 压力溃散",
+    "intro": "沙块可以临时垫高水道，但水满后的压力会让它塌成土壤或直接消失。先想清楚哪一层要留。",
+    "seed": 11004,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 5,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 12,
+        "m": "sand"
+      },
+      {
+        "x": 3,
+        "y": 12,
+        "m": "sand"
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "m": "sand"
+      },
+      {
+        "x": 7,
+        "y": 12,
+        "m": "sand"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "soil2",
+      "sand",
+      "sponge"
+    ],
+    "blockLimit": 14,
+    "fallInterval": 26,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 6
+  },
+  {
+    "id": "c05",
+    "index": 5,
+    "name": "管道改道",
+    "subtitle": "合同 05 · 让水横着走",
+    "mechanic": "管道 · 强制转向",
+    "intro": "管道会把进入的水推向箭头方向。旋转它，把水从死角里导出。",
+    "seed": 11005,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 8,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "pipe",
+      "pipe",
+      "soil2"
+    ],
+    "blockLimit": 14,
+    "fallInterval": 25,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 6
+  },
+  {
+    "id": "c06",
+    "index": 6,
+    "name": "单向阀",
+    "subtitle": "合同 06 · 水只往一个方向",
+    "mechanic": "单向阀 · 定向导流",
+    "intro": "单向阀只允许水朝箭头方向流动。把它放在水道拐角，让水老老实实去排水口。",
+    "seed": 11006,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 1,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 8,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 4,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocketDirty",
+      "pocketDirty",
+      "valve",
+      "soil2"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 24,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 8
+      }
+    ],
+    "star3Blocks": 7
+  },
+  {
+    "id": "c07",
+    "index": 7,
+    "name": "海绵吸水",
+    "subtitle": "合同 07 · 用海绵兜住洪水",
+    "mechanic": "海绵 · 容量与挤压",
+    "intro": "海绵最多吸 2 单位水，吸满就失效。把多余的水存在海绵里，给排水口争取时间。",
+    "seed": 11007,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 13,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "sponge",
+      "sponge",
+      "soil2",
+      "sand"
+    ],
+    "blockLimit": 14,
+    "fallInterval": 24,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 8
+      }
+    ],
+    "star3Blocks": 6
+  },
+  {
+    "id": "c08",
+    "index": 8,
+    "name": "过滤网",
+    "subtitle": "合同 08 · 把脏水洗干净",
+    "mechanic": "过滤器 · 堵塞与清洗",
+    "intro": "污水穿过过滤器会变清，但每过滤 3 单位就会堵塞。也可以把一部分污水送进 B 口减压。",
+    "seed": 11008,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 5,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 8,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "filter"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "filter"
+      },
+      {
+        "x": 6,
+        "y": 14,
+        "m": "filter"
+      },
+      {
+        "x": 7,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocketDirty",
+      "pocketDirty",
+      "pocketDirty",
+      "filter",
+      "filter",
+      "sponge",
+      "soil2"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 24,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 4
+      }
+    ],
+    "star3Blocks": 7
+  },
+  {
+    "id": "c09",
+    "index": 9,
+    "name": "压力边缘",
+    "subtitle": "合同 09 · 别把井道堵死",
+    "mechanic": "压力 · 土壤开裂 / 管道爆裂",
+    "intro": "水满之后继续进水会产生压力。沙块会塌，土壤会裂，管道会爆。用压力表观察危险列。",
+    "seed": 11009,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 3,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 15,
+        "m": "sand"
+      },
+      {
+        "x": 7,
+        "y": 15,
+        "m": "sand"
+      },
+      {
+        "x": 6,
+        "y": 14,
+        "m": "sand"
+      },
+      {
+        "x": 7,
+        "y": 14,
+        "m": "sand"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "pipe",
+      "sand",
+      "sponge"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 23,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 16
+      }
+    ],
+    "star3Blocks": 7
+  },
+  {
+    "id": "c10",
+    "index": 10,
+    "name": "水账平衡",
+    "subtitle": "合同 10 · 清水与污水各归其位",
+    "mechanic": "综合考核 · 双色双口",
+    "intro": "清污两条管线都要满足。注意水账本：下落的总水量必须等于排出、在场、溢出之和。",
+    "seed": 11010,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 1,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 8,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 3,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocketDirty",
+      "pocketDirty",
+      "soil2",
+      "filter",
+      "sponge"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "amount": 8
+      },
+      {
+        "type": "drainDirty",
+        "drainId": 2,
+        "amount": 3
+      }
+    ],
+    "star3Blocks": 8
+  },
+  {
+    "id": "c11",
+    "index": 11,
+    "name": "冰面滑行",
+    "subtitle": "合同 11 · 水不驻留的冰",
+    "mechanic": "冰块 · 低摩擦导流",
+    "intro": "冰块不会存水，水会从上面滑过。把冰铺成斜坡，让水绕开危险区，直奔排水口。",
+    "seed": 11011,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 7,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "m": "ice"
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "m": "ice"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "ice"
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "m": "ice"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "ice",
+      "ice",
+      "pipe",
+      "soil2"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 16
+      }
+    ],
+    "star3Blocks": 7
+  },
+  {
+    "id": "c12",
+    "index": 12,
+    "name": "水厂总验收",
+    "subtitle": "合同 12 · 最后一项大合同",
+    "mechanic": "终局考核 · 所有机制",
+    "intro": "清污双线、压力、过滤、阀門全部上阵。把水位压在安全线以下，并完成两份排水指标。",
+    "seed": 11012,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 1,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 8,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 2,
+        "y": 8,
+        "m": "sand"
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "m": "sand"
+      },
+      {
+        "x": 3,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocketDirty",
+      "filter",
+      "pipe",
+      "valve",
+      "sponge",
+      "soil2"
+    ],
+    "blockLimit": 20,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "amount": 10
+      },
+      {
+        "type": "drainDirty",
+        "drainId": 2,
+        "amount": 3
+      }
+    ],
+    "star3Blocks": 9
+  },
+  {
+    "id": "c13",
+    "index": 13,
+    "name": "窄颈",
+    "subtitle": "合同 13 · 收窄的井口",
+    "mechanic": "窄口导流",
+    "intro": "井口两侧被土墙夹成一条窄颈。水囊要落进窄颈才会裂开注水，落偏了只能湿一层皮。",
+    "seed": 11013,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 2,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "soil2",
+      "sponge",
+      "sand"
+    ],
+    "blockLimit": 14,
+    "fallInterval": 26,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 7
+  },
+  {
+    "id": "c14",
+    "index": 14,
+    "name": "双塔",
+    "subtitle": "合同 14 · 两座塔之间",
+    "mechanic": "双侧排水",
+    "intro": "两座土塔把井分成三路，左右各有一个清水口。水要同时往两边分，塔基就是分水岭。",
+    "seed": 11014,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 0,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 9,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 3,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "soil2",
+      "soilL",
+      "sponge"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 25,
+    "goals": [
+      {
+        "type": "drainClean",
+        "amount": 14
+      }
+    ],
+    "star3Blocks": 4
+  },
+  {
+    "id": "c15",
+    "index": 15,
+    "name": "沙坝",
+    "subtitle": "合同 15 · 冲开沙坝",
+    "mechanic": "沙块 · 水压破坝",
+    "intro": "排水口上方横着一道沙坝。水位抬起来产生的压力会把沙坝冲塌，坝一塌水才放得下去。",
+    "seed": 11015,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 2,
+        "y": 13,
+        "m": "sand"
+      },
+      {
+        "x": 3,
+        "y": 13,
+        "m": "sand"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "sand"
+      },
+      {
+        "x": 5,
+        "y": 13,
+        "m": "sand"
+      },
+      {
+        "x": 6,
+        "y": 13,
+        "m": "sand"
+      },
+      {
+        "x": 7,
+        "y": 13,
+        "m": "sand"
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "sand",
+      "soil2",
+      "sponge"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 24,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 7
+  },
+  {
+    "id": "c16",
+    "index": 16,
+    "name": "污水回廊",
+    "subtitle": "合同 16 · 各走各的廊道",
+    "mechanic": "清水 / 污水分离",
+    "intro": "中间一道隔墙，左边通清水口，右边通污水口。清水一沾到右廊就全变成污水。",
+    "seed": 11016,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 2,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 7,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 4,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocketDirty",
+      "pocketDirty",
+      "soil2",
+      "filter",
+      "sponge"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 24,
+    "goals": [
+      {
+        "type": "drainDirty",
+        "drainId": 1,
+        "amount": 10
+      }
+    ],
+    "star3Blocks": 8
+  },
+  {
+    "id": "c17",
+    "index": 17,
+    "name": "冰道",
+    "subtitle": "合同 17 · 滑不溜手",
+    "mechanic": "冰块 · 快速导流",
+    "intro": "井底铺了一排冰块。水不会在冰面停留，会一路滑到底部的排水口，滑过头就溢出了。",
+    "seed": 11017,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 8,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 14,
+        "m": "ice"
+      },
+      {
+        "x": 1,
+        "y": 14,
+        "m": "ice"
+      },
+      {
+        "x": 2,
+        "y": 14,
+        "m": "ice"
+      },
+      {
+        "x": 3,
+        "y": 14,
+        "m": "ice"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "ice"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "ice"
+      },
+      {
+        "x": 6,
+        "y": 14,
+        "m": "ice"
+      },
+      {
+        "x": 7,
+        "y": 14,
+        "m": "ice"
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "ice",
+      "pipe",
+      "soil2"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 23,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 10
+      }
+    ],
+    "star3Blocks": 4
+  },
+  {
+    "id": "c18",
+    "index": 18,
+    "name": "阀阵",
+    "subtitle": "合同 18 · 单向通行",
+    "mechanic": "单向阀 · 定向导流",
+    "intro": "厚墙把井分成左右两半，墙根留了两个单向阀。左边只收清水，右边只收污水。",
+    "seed": 11018,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 2,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 7,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 4,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocketDirty",
+      "pocketDirty",
+      "valve",
+      "soil2",
+      "sponge"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 24,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 8
+  },
+  {
+    "id": "c19",
+    "index": 19,
+    "name": "滤芯",
+    "subtitle": "合同 19 · 把脏水洗回来",
+    "mechanic": "过滤器 · 堵塞与清洗",
+    "intro": "手里只有污水囊。清水口上方串着两格滤芯，脏水得先在滤芯里洗白，才配进清水口；旁边另有污水口可以直排。",
+    "seed": 11040,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 8,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 4,
+        "y": 13,
+        "m": "filter"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "filter"
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocketDirty",
+      "pocketDirty",
+      "filter",
+      "sponge",
+      "soil2"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 24,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 10
+      }
+    ],
+    "star3Blocks": 13
+  },
+  {
+    "id": "c20",
+    "index": 20,
+    "name": "三层",
+    "subtitle": "合同 20 · 梯级跌水",
+    "mechanic": "阶梯导流",
+    "intro": "三层错位的台阶级级收窄，水只能沿着台阶一格一格往右挪，最后从最右边的台阶缺口落到排水口。",
+    "seed": 11104,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 9,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 10,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "soil2",
+      "soilL",
+      "sand"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 23,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 6
+  },
+  {
+    "id": "c21",
+    "index": 21,
+    "name": "对冲",
+    "subtitle": "合同 21 · 中间排污",
+    "mechanic": "三口气流",
+    "intro": "两个清水口分别在最左和最右，污水口正中间。互不干扰才是满分。",
+    "seed": 11021,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 0,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 9,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 2,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocketDirty",
+      "pocketDirty",
+      "soil2",
+      "pipe",
+      "sponge"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainDirty",
+        "drainId": 2,
+        "amount": 8
+      }
+    ],
+    "star3Blocks": 11
+  },
+  {
+    "id": "c22",
+    "index": 22,
+    "name": "沉沙池",
+    "subtitle": "合同 22 · 先沉后放",
+    "mechanic": "沙块 · 压力破坝",
+    "intro": "排水口被厚沙封住。先把水蓄住，等压力把沙层压穿，水才会一泻而下。",
+    "seed": 11022,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 3,
+        "y": 14,
+        "m": "sand"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "sand"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "sand"
+      },
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 13,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "sand",
+      "soil2",
+      "sponge"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 11
+  },
+  {
+    "id": "c23",
+    "index": 23,
+    "name": "竖井分工",
+    "subtitle": "合同 23 · 左边清水右边脏",
+    "mechanic": "双井分离",
+    "intro": "一根厚墙把井劈成两条竖井，左边只通清水口，右边只通污水口。放错井就白搭一块。",
+    "seed": 11100,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 1,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 7,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 4,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocketDirty",
+      "pocketDirty",
+      "soil2",
+      "valve",
+      "sponge"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 23,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 10
+      },
+      {
+        "type": "drainDirty",
+        "drainId": 1,
+        "amount": 6
+      }
+    ],
+    "star3Blocks": 4
+  },
+  {
+    "id": "c24",
+    "index": 24,
+    "name": "混合料",
+    "subtitle": "合同 24 · 什么都有",
+    "mechanic": "综合 · 冰沙滤阀",
+    "intro": "冰块、沙坝、过滤器、单向阀同时出现在一口井里。先想清楚水会走哪条路。",
+    "seed": 11024,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 7,
+        "m": "ice"
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "m": "ice"
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "m": "ice"
+      },
+      {
+        "x": 3,
+        "y": 7,
+        "m": "ice"
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "m": "ice"
+      },
+      {
+        "x": 7,
+        "y": 7,
+        "m": "ice"
+      },
+      {
+        "x": 8,
+        "y": 7,
+        "m": "ice"
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "m": "ice"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "sand"
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "m": "sand"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "filter"
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "filter",
+      "valve",
+      "ice",
+      "sponge"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 7
+  },
+  {
+    "id": "c25",
+    "index": 25,
+    "name": "高压阀",
+    "subtitle": "合同 25 · 别把管子撑爆",
+    "mechanic": "压力 · 管道爆裂",
+    "intro": "井口很窄，水一多就积压。管道能加速排水，但压力超过 1.2 它自己就炸了。",
+    "seed": 11025,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 1,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pipe",
+      "pipe",
+      "sand",
+      "sponge"
+    ],
+    "blockLimit": 16,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 10
+      }
+    ],
+    "star3Blocks": 4
+  },
+  {
+    "id": "c26",
+    "index": 26,
+    "name": "海绵缓冲",
+    "subtitle": "合同 26 · 先吸后放",
+    "mechanic": "海绵 · 容量与挤压",
+    "intro": "井壁挂着两块预吸水的海绵。它们能吸收峰值水量，也会在你不需要的时候把水吐回来。",
+    "seed": 11026,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 4,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 3,
+        "y": 12,
+        "m": "sponge",
+        "absorb": 0.8
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "m": "sponge",
+        "absorb": 0.8
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "sponge",
+      "soil2",
+      "pipe"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 5
+  },
+  {
+    "id": "c27",
+    "index": 27,
+    "name": "双色平衡",
+    "subtitle": "合同 27 · 两边都要交数",
+    "mechanic": "双目标 · 清污并行",
+    "intro": "清水和污水各有配额，一个到数不算完。两条水路必须在同一口井里共存。",
+    "seed": 11041,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 1,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 8,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 4,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 5,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocketDirty",
+      "pocketDirty",
+      "filter",
+      "valve",
+      "soil2"
+    ],
+    "blockLimit": 20,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 10
+      },
+      {
+        "type": "drainDirty",
+        "drainId": 1,
+        "amount": 8
+      }
+    ],
+    "star3Blocks": 5
+  },
+  {
+    "id": "c28",
+    "index": 28,
+    "name": "冰与阀",
+    "subtitle": "合同 28 · 快速定向",
+    "mechanic": "冰块 + 单向阀",
+    "intro": "冰面让水不停地滑，单向阀负责把滑过来的水扳向出口。两者配合才留得住水。",
+    "seed": 11028,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 7,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 0,
+        "y": 9,
+        "m": "ice"
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "m": "ice"
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "m": "ice"
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "m": "ice"
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "m": "ice"
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "m": "ice"
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "m": "ice"
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "m": "valve",
+        "dir": 2
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "ice",
+      "valve",
+      "pipe",
+      "soil2"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 10
+      }
+    ],
+    "star3Blocks": 3
+  },
+  {
+    "id": "c29",
+    "index": 29,
+    "name": "窄缝",
+    "subtitle": "合同 29 · 只有一条缝",
+    "mechanic": "极限导流",
+    "intro": "土墙只留一格宽的缝。所有水都得从这条缝挤过去，堵上一块就全盘皆输。",
+    "seed": 11029,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 5,
+        "y": 15,
+        "kind": "clean"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 3,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 6,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 7,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 13,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 14,
+        "m": "soil"
+      },
+      {
+        "x": 0,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 1,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 4,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 7,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 8,
+        "y": 15,
+        "m": "soil"
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "m": "soil"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocket",
+      "pocket",
+      "pocket",
+      "soil2",
+      "sand",
+      "sponge"
+    ],
+    "blockLimit": 18,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "drainId": 0,
+        "amount": 8
+      }
+    ],
+    "star3Blocks": 5
+  },
+  {
+    "id": "c30",
+    "index": 30,
+    "name": "水厂总验收 II",
+    "subtitle": "合同 30 · 三十份合同",
+    "mechanic": "终局考核 · 全机制",
+    "intro": "三十份合同的最后一份。三口气、两种水、四类机关同时在场。能过这一关，你就是厂长。",
+    "seed": 11030,
+    "cols": 10,
+    "rows": 16,
+    "drains": [
+      {
+        "id": 0,
+        "x": 0,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 1,
+        "x": 9,
+        "y": 15,
+        "kind": "clean"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 15,
+        "kind": "dirty"
+      }
+    ],
+    "terrain": [
+      {
+        "x": 3,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 3,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 11,
+        "m": "soil"
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "m": "soil"
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "m": "sand"
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "m": "sand"
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "m": "filter"
+      },
+      {
+        "x": 5,
+        "y": 13,
+        "m": "filter"
+      },
+      {
+        "x": 1,
+        "y": 11,
+        "m": "ice"
+      },
+      {
+        "x": 8,
+        "y": 11,
+        "m": "ice"
+      }
+    ],
+    "pool": [
+      "pocket",
+      "pocketDirty",
+      "filter",
+      "pipe",
+      "valve",
+      "sponge",
+      "ice",
+      "soil2"
+    ],
+    "blockLimit": 20,
+    "fallInterval": 22,
+    "goals": [
+      {
+        "type": "drainClean",
+        "amount": 12
+      }
+    ],
+    "star3Blocks": 11
+  }
+]

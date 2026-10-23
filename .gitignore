@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+.npm-cache/
+
+# build output
+dist/
+*.local
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.X.vue.*.tmpdir/
+*.tmp
+*.log
