@@ -67,7 +67,7 @@
         "amount": 8
       }
     ],
-    "star3Blocks": 4
+    "star3Blocks": 7
   },
   {
     "id": "c02",
@@ -152,7 +152,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 5
+    "star3Blocks": 6
   },
   {
     "id": "c03",
@@ -228,7 +228,7 @@
         "amount": 8
       }
     ],
-    "star3Blocks": 6
+    "star3Blocks": 9
   },
   {
     "id": "c04",
@@ -308,7 +308,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 6
+    "star3Blocks": 7
   },
   {
     "id": "c05",
@@ -388,7 +388,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 6
+    "star3Blocks": 8
   },
   {
     "id": "c06",
@@ -464,7 +464,7 @@
         "amount": 8
       }
     ],
-    "star3Blocks": 7
+    "star3Blocks": 5
   },
   {
     "id": "c07",
@@ -535,7 +535,7 @@
         "amount": 8
       }
     ],
-    "star3Blocks": 6
+    "star3Blocks": 9
   },
   {
     "id": "c08",
@@ -621,7 +621,7 @@
         "amount": 4
       }
     ],
-    "star3Blocks": 7
+    "star3Blocks": 3
   },
   {
     "id": "c09",
@@ -701,7 +701,7 @@
         "amount": 16
       }
     ],
-    "star3Blocks": 7
+    "star3Blocks": 6
   },
   {
     "id": "c10",
@@ -887,7 +887,7 @@
         "amount": 16
       }
     ],
-    "star3Blocks": 7
+    "star3Blocks": 14
   },
   {
     "id": "c12",
@@ -993,7 +993,7 @@
         "amount": 3
       }
     ],
-    "star3Blocks": 9
+    "star3Blocks": 8
   },
   {
     "id": "c13",
@@ -1143,7 +1143,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 7
+    "star3Blocks": 9
   },
   {
     "id": "c14",
@@ -1278,7 +1278,7 @@
         "amount": 14
       }
     ],
-    "star3Blocks": 4
+    "star3Blocks": 5
   },
   {
     "id": "c15",
@@ -1498,7 +1498,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 7
+    "star3Blocks": 8
   },
   {
     "id": "c16",
@@ -1614,7 +1614,7 @@
         "amount": 10
       }
     ],
-    "star3Blocks": 8
+    "star3Blocks": 10
   },
   {
     "id": "c17",
@@ -1925,7 +1925,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 8
+    "star3Blocks": 12
   },
   {
     "id": "c19",
@@ -2299,7 +2299,7 @@
         "amount": 10
       }
     ],
-    "star3Blocks": 13
+    "star3Blocks": 14
   },
   {
     "id": "c20",
@@ -2444,7 +2444,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 6
+    "star3Blocks": 5
   },
   {
     "id": "c21",
@@ -2546,7 +2546,7 @@
         "amount": 8
       }
     ],
-    "star3Blocks": 11
+    "star3Blocks": 8
   },
   {
     "id": "c22",
@@ -2897,7 +2897,7 @@
         "amount": 6
       }
     ],
-    "star3Blocks": 4
+    "star3Blocks": 9
   },
   {
     "id": "c24",
@@ -3142,7 +3142,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 7
+    "star3Blocks": 9
   },
   {
     "id": "c25",
@@ -3302,7 +3302,7 @@
         "amount": 10
       }
     ],
-    "star3Blocks": 4
+    "star3Blocks": 5
   },
   {
     "id": "c26",
@@ -3504,7 +3504,7 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 5
+    "star3Blocks": 7
   },
   {
     "id": "c27",
@@ -3665,7 +3665,7 @@
         "amount": 8
       }
     ],
-    "star3Blocks": 5
+    "star3Blocks": 9
   },
   {
     "id": "c28",
@@ -3821,7 +3821,7 @@
         "amount": 10
       }
     ],
-    "star3Blocks": 3
+    "star3Blocks": 4
   },
   {
     "id": "c29",
@@ -4086,7 +4086,7 @@
         "amount": 8
       }
     ],
-    "star3Blocks": 5
+    "star3Blocks": 6
   },
   {
     "id": "c30",
@@ -4208,6 +4208,6 @@
         "amount": 12
       }
     ],
-    "star3Blocks": 11
+    "star3Blocks": 14
   }
 ]
