@@ -53,6 +53,7 @@ const DROP: HardDropFx = {
   toY: 11,
   cells: [{ x: 0, y: 0 }],
   color: '#8a5a3b',
+  kind: 'sand',
 };
 
 describe('hard-drop trail reaches the renderer', () => {
@@ -62,7 +63,8 @@ describe('hard-drop trail reaches the renderer', () => {
     vr.update(blankFrame());
     expect(vr.trailMesh.count).toBe(0);
 
-    const trailAt = (age: number) => ([{ fromY: 1, toY: 11, x: 3, cells: [{ x: 0, y: 0 }], color: '#8a5a3b', age }]);
+    const trailAt = (age: number) =>
+      ([{ fromY: 1, toY: 11, x: 3, cells: [{ x: 0, y: 0 }], color: '#8a5a3b', kind: 'sand' as const, age }]);
 
     // Early in the slam the block is still near where it started...
     vr.update(blankFrame({ dropTrails: trailAt(0.1) }));
@@ -88,7 +90,8 @@ describe('hard-drop trail reaches the renderer', () => {
   it('fades with age and disappears at age 1', () => {
     const vr = new VoxelRenderer();
     vr.setGrid(COLS, ROWS);
-    const trail = (age: number) => [{ fromY: 1, toY: 9, x: 3, cells: [{ x: 0, y: 0 }], color: '#8a5a3b', age }];
+    const trail = (age: number) =>
+      ([{ fromY: 1, toY: 9, x: 3, cells: [{ x: 0, y: 0 }], color: '#8a5a3b', kind: 'sand' as const, age }]);
 
     vr.update(blankFrame({ dropTrails: trail(0) }));
     const fresh = vr.trailMesh.count;
@@ -110,7 +113,7 @@ describe('hard-drop trail reaches the renderer', () => {
       { x: 0, y: 1 }, { x: 1, y: 1 },
     ];
     const drops = Array.from({ length: 6 }, (_, i) => ({
-      fromY: 0, toY: ROWS + 9, x: i, cells, color: '#8a5a3b', age: 0.2,
+      fromY: 0, toY: ROWS + 9, x: i, cells, color: '#8a5a3b', kind: 'sand' as const, age: 0.2,
     }));
     vr.update(blankFrame({ dropTrails: drops }));
     expect(vr.trailMesh.count).toBeLessThanOrEqual(256);

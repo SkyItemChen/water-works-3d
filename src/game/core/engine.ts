@@ -402,6 +402,8 @@ export class GameEngine {
             toY: this.pieceY,
             cells: this.piece.cells.map((c) => ({ x: c.x, y: c.y })),
             color: this.piece.color,
+            kind: this.piece.kind,
+            dir: this.piece.dir,
           });
           if (this.hardDrops.length > 64) this.hardDrops.splice(0, this.hardDrops.length - 64);
         }

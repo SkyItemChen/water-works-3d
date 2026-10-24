@@ -4,7 +4,7 @@ import { DropTrails } from '../game/three/DropTrails';
 import type { HardDropFx } from '../game/core/types';
 
 function drop(t: number, fromY: number, toY: number): HardDropFx {
-  return { t, x: 3, fromY, toY, cells: [{ x: 0, y: 0 }, { x: 1, y: 0 }], color: '#8a5a3b' };
+  return { t, x: 3, fromY, toY, cells: [{ x: 0, y: 0 }, { x: 1, y: 0 }], color: '#8a5a3b', kind: 'sand' };
 }
 
 describe('hard-drop trail (presentation only)', () => {

@@ -44,6 +44,17 @@ function frameWith(cells: { x: number; y: number; mat: number; dir: number }[], 
   };
 }
 
+/** The z depth each arrow instance was drawn at. */
+function arrowDepths(mesh: THREE.InstancedMesh): number[] {
+  const m = new THREE.Matrix4();
+  const out: number[] = [];
+  for (let i = 0; i < mesh.count; i++) {
+    mesh.getMatrixAt(i, m);
+    out.push(m.elements[14]);
+  }
+  return out;
+}
+
 /** Which way does each arrow instance actually point, in degrees clockwise from up? */
 function arrowAngles(mesh: THREE.InstancedMesh): number[] {
   const m = new THREE.Matrix4();
@@ -122,6 +133,42 @@ describe('conduits draw a direction arrow', () => {
     // A cube rotated by 90° looks the same; an arrow must not.
     expect(down).not.toBe(left);
     expect([down, left]).toEqual([180, 270]);
+    vr.dispose();
+  });
+
+  it('a pipe that just spawned keeps its arrow in front of its own body', () => {
+    const vr = new VoxelRenderer();
+    vr.setGrid(COLS, ROWS);
+    // spawn() parks the lowest cell on row 0, so this is the first frame the
+    // player ever sees of the piece -- the arrow must already be readable.
+    vr.update(
+      frameWith([], {
+        piece: { cells: [{ x: 0, y: 0 }], x: 4, y: 0, color: '#9aa7b4', kind: 'pipe', dir: 2 },
+      }),
+    );
+    expect(vr.arrowMesh.count).toBe(1);
+    // The piece slab is 0.88 deep at z 0.28, so its front face is at 0.72. An
+    // arrow drawn any shallower is inside the block and gets depth-culled.
+    expect(arrowDepths(vr.arrowMesh)[0]).toBeGreaterThan(0.72);
+    vr.dispose();
+  });
+
+  it('keeps the arrow on a conduit while a hard drop is in flight', () => {
+    const vr = new VoxelRenderer();
+    vr.setGrid(COLS, ROWS);
+    const drop = (kind: 'pipe' | 'valve' | 'sand', dir?: number) => [
+      { fromY: 0, toY: 10, x: 3, cells: [{ x: 0, y: 0 }], color: '#9aa7b4', kind, dir, age: 0.2 },
+    ];
+
+    vr.update(frameWith([], { dropTrails: drop('pipe', 3) }));
+    expect(vr.arrowMesh.count).toBe(1);
+    expect(arrowAngles(vr.arrowMesh)).toEqual([270]);
+    // The flying slab sits at z 0.34 with a 0.88 depth (face 0.78).
+    expect(arrowDepths(vr.arrowMesh)[0]).toBeGreaterThan(0.78);
+
+    // A block without a direction still gets no arrow.
+    vr.update(frameWith([], { dropTrails: drop('sand') }));
+    expect(vr.arrowMesh.count).toBe(0);
     vr.dispose();
   });
 

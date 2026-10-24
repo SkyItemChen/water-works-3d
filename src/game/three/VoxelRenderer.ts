@@ -56,9 +56,24 @@ export interface VoxelFrame {
     x: number;
     cells: { x: number; y: number }[];
     color: string;
+    kind: string;
+    dir?: number;
     age: number;
   }[];
 }
+
+/**
+ * Arrow depths, one per drawn layer. Each value must clear the front face of
+ * the slab it sits on, or that slab's depth write hides the arrow: a board cell
+ * is a 0.9-deep box centred at z 0 (face 0.45), the falling piece is a
+ * 0.88-deep box at z 0.28 (face 0.72), the hard-drop overlay is the same box at
+ * z 0.34 (face 0.78).
+ */
+const ARROW_Z = {
+  board: 0.56,
+  piece: 0.78,
+  trail: 0.84,
+} as const;
 
 const MAX_INSTANCES = 4096;
 
@@ -371,7 +386,7 @@ export class VoxelRenderer {
         const gy = py0 + cells[0].y;
         if (gy >= -2) {
           const { px, py } = this.worldPos(gx, gy);
-          this.arrowAt(ac++, px, py, frame.piece.dir, frame.piece.kind === 'valve' ? 1.0 : 0.92);
+          this.arrowAt(ac++, px, py, frame.piece.dir, frame.piece.kind === 'valve' ? 1.0 : 0.92, ARROW_Z.piece);
         }
       }
 
@@ -398,9 +413,6 @@ export class VoxelRenderer {
     this.ghostMesh.count = gc;
     this.ghostMesh.instanceMatrix.needsUpdate = true;
     if (this.ghostMesh.instanceColor) this.ghostMesh.instanceColor.needsUpdate = true;
-
-    this.arrowMesh.count = ac;
-    this.arrowMesh.instanceMatrix.needsUpdate = true;
 
     // --- Hard-drop trail -----------------------------------------------------
     // The rules lock the piece on the tick space is pressed, so the settled
@@ -451,11 +463,33 @@ export class VoxelRenderer {
           this.trailMesh.setColorAt(tc, this.color);
           tc++;
         }
+        // A conduit keeps its arrow while it is in the air. The rules lock the
+        // piece on the same tick the drop is issued, so the board cell that
+        // shows the arrow is already behind this overlay: without drawing it
+        // here the arrow vanishes for the whole slam.
+        if ((trail.kind === 'pipe' || trail.kind === 'valve') && trail.dir !== undefined) {
+          const gy = Math.round(rowNow) + trail.cells[0].y;
+          if (gy >= -2) {
+            const { px, py } = this.worldPos(trail.x + trail.cells[0].x, gy);
+            this.arrowAt(
+              ac++,
+              px,
+              py,
+              trail.dir,
+              trail.kind === 'valve' ? 1.0 : 0.92,
+              ARROW_Z.trail,
+            );
+          }
+        }
       }
     }
     this.trailMesh.count = tc;
     this.trailMesh.instanceMatrix.needsUpdate = true;
     if (this.trailMesh.instanceColor) this.trailMesh.instanceColor.needsUpdate = true;
+
+    // Flushed last: the hard-drop loop above appends arrows too.
+    this.arrowMesh.count = ac;
+    this.arrowMesh.instanceMatrix.needsUpdate = true;
   }
 
   private pickSolidColor(
@@ -502,11 +536,19 @@ export class VoxelRenderer {
    * Place one arrow: `dir` is the water direction (0 up, 1 right, 2 down, 3 left)
    * and the arrow geometry points +Y by default.
    */
-  private arrowAt(index: number, px: number, py: number, dir: number, scale: number): void {
+  private arrowAt(
+    index: number,
+    px: number,
+    py: number,
+    dir: number,
+    scale: number,
+    z: number = ARROW_Z.board,
+  ): void {
     if (index >= MAX_INSTANCES) return;
     // Screen Y grows downward while world Y grows upward; a clockwise rotation
     // of `dir * 90°` about Z maps +Y onto the right/left/down directions.
-    this.dummy.position.set(px, py, 0.56);
+    // `z` is the caller's layer depth; see ARROW_Z.
+    this.dummy.position.set(px, py, z);
     this.dummy.rotation.set(0, 0, -(dir * Math.PI) / 2);
     this.dummy.scale.setScalar(scale);
     this.dummy.updateMatrix();

@@ -143,6 +143,13 @@ export interface HardDropFx {
   /** piece footprint, unrotated offsets of the landed piece */
   cells: BlockCell[];
   color: string;
+  /**
+   * Piece kind and conduit direction, so the renderer can draw the direction
+   * arrow on the flying slam too. Without these the arrow vanished for the
+   * whole drop, even though the block that landed immediately shows one.
+   */
+  kind: BlockKind;
+  dir?: Dir;
 }
 
 export interface DrainDef {

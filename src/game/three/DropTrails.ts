@@ -10,7 +10,7 @@
  * writes back to the engine, the store or the state hash.
  */
 
-import type { HardDropFx } from '../core/types';
+import type { BlockKind, Dir, HardDropFx } from '../core/types';
 
 export interface DropTrailFrame {
   fromY: number;
@@ -18,6 +18,10 @@ export interface DropTrailFrame {
   x: number;
   cells: { x: number; y: number }[];
   color: string;
+  /** piece kind, so the renderer can tell a conduit from a plain block */
+  kind: BlockKind;
+  /** conduit direction, drawn as an arrow on the flying piece */
+  dir?: Dir;
   /** 0 at the moment of the drop, 1 when it has faded out. */
   age: number;
 }
@@ -60,6 +64,8 @@ export class DropTrails {
       x: l.fx.x,
       cells: l.fx.cells,
       color: l.fx.color,
+      kind: l.fx.kind,
+      dir: l.fx.dir,
       age: l.age,
     }));
   }
