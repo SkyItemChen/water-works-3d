@@ -16,13 +16,18 @@ import ResultOverlay from '@/components/ResultOverlay.vue';
 import TouchControls from '@/components/TouchControls.vue';
 import ReplayOverlay from '@/components/ReplayOverlay.vue';
 import TutorialOverlay from '@/components/TutorialOverlay.vue';
+import TutorialIntro from '@/components/TutorialIntro.vue';
 
 const store = useGameStore();
 const settings = useSettingsStore();
 
 const inGame = computed(() => store.screen === 'game');
 const showCanvas = computed(() => store.screen === 'game');
-const showTouch = computed(() => store.screen === 'game' && !store.paused && !store.showResult);
+// Held during a tutorial briefing: the pad would do nothing (dispatch is gated),
+// so it must not sit there inviting taps.
+const showTouch = computed(
+  () => store.screen === 'game' && !store.paused && !store.showResult && !store.coachHold,
+);
 
 onMounted(() => {
   store.audio.setMuted(settings.muted);
@@ -40,6 +45,10 @@ onMounted(() => {
 <template>
   <div class="app">
     <GameCanvas v-if="showCanvas" :active="inGame" />
+
+    <!-- Tutorial landing page: painted above the main menu (title, step list,
+         开始教程 / 跳过教程 — the only place that offers skipping). -->
+    <TutorialIntro />
 
     <Transition name="screen" mode="out-in">
       <MainMenu v-if="store.screen === 'menu'" key="menu" />

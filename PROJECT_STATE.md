@@ -1,6 +1,6 @@
 # PROJECT_STATE — Waterworks 3D
 
-> 跨会话记忆文件。只在架构级变动 / 重大模块完成 / 会话收尾时更新。上次更新：2026-10-26（60 关 + 分页解锁）。
+> 跨会话记忆文件。只在架构级变动 / 重大模块完成 / 会话收尾时更新。上次更新：2026-10-26（60 关 + 分页解锁；终局卡死修复；新手教程改为先读后玩 + 自动推进）。
 
 ## 1. 项目定位
 - 3D 体素轻策略解谜游戏：下落地块 + **100% 确定性水流**模拟。商店标签 Strategy / Puzzle / Relaxing，定价锚点 $9.99。
@@ -21,7 +21,7 @@
   - **回放两条路径**：`ReplayDriver` 驱动紧凑码（逐 tick 注入落点，终止条件 = 引擎终局）；`playbackLegacy` 驱动旧逐按键码（`tt` 为录制边界）。
 - `src/game/three/**`：唯一接触 Three 的层。`SceneManager`（场景/循环入口）、`VoxelRenderer`（固体/预览/幽灵/落块各一个 `InstancedMesh`）、`WaterRenderer`（半透明水面高度）、`CameraController`（**正面视角**：`FRONT_AZIMUTH = π/2`、`FRONT_ELEVATION = 0.16`，拖动/按键方位角锁在正面 ±0.42 内，`refit()` 按视口反算距离，`manualZoom` 保留玩家手动缩放）、`Effects`、`WowMoments`（三个哇时刻）。
 - 正面视角三条硬约束（勿回退）：①体素必须留缝（0.96/0.9 而非 1.0）+ 逐格亮度抖动，否则同材质相邻块糊成一堵墙；②背板 z=-0.82、网格线 z=-0.52、体素占 z∈[-0.45,0.45]，粒子/幽灵/落块放 z≈0.5 才能在体素前方，否则被深度测试吞掉；③落块出生在行 0 之上（允许渲染 `gy < 0`，下限 -2），取景的竖直半高按 `(rows + 2.8) / 2` 预留头部空间 —— 用 NDC 投影验证过：网格四边 + 最坏出生块顶点在所有 6 种视口比例下均 ≤ 0.9。
-- `src/stores/**`：`gameStore`（局内状态）、`settingsStore`（静音/预览步数等）、`progressStore`（关卡进度、最高分、每日记录、分享码历史、`tutorialDone`，落 localStorage）、`tutorialStore`（**教程旁路观察者**：watch `gameStore.snapshot` → 转换为离散观察 → 调 `core/tutorial.ts` 的纯谓词；不写引擎）。
+- `src/stores/**`：`gameStore`（局内状态）、`settingsStore`（静音/预览步数等）、`progressStore`（关卡进度、最高分、每日记录、分享码历史、`tutorialDone`，落 localStorage）、`tutorialStore`（**教程旁路观察者**：watch `gameStore.snapshot` → 转换为离散观察 → 调 `core/tutorial.ts` 的纯谓词；不写引擎。另有落地页 `intro`、简报闸门 `holdRun`→`gameStore.coachHold`、达成后 900ms 自动进下一步）。
 - `src/components/**`：纯 UI（GameCanvas / Hud / NextPreview / TouchControls / TutorialOverlay / 各 Overlay / MainMenu / LevelSelect / DailyChallenge / ShareCodePanel / ReplayOverlay / LevelEditor）。
 - `src/game/core/blockGuide.ts` + `components/BlockGuide.vue`：主菜单「方块图鉴」。只有 role/summary/detail/caution 四段文案是手写的，名称/几何/颜色都从 `BLOCKS` 读；新增方块不补文案，`tests/blockGuide.test.ts` 直接红。
 - 游戏循环：`composables/useGameLoop.ts` 固定步长 tick + rAF 渲染；Three 对象一律 `shallowRef`，避免深度响应式。
@@ -37,7 +37,7 @@
 - 阶段 1（MVP）与阶段 2（每日挑战、本地榜、回放+分享码、压力爆裂粒子、交汇变色、排空拉远）**均已完成**。
 - **关卡编辑器**已完成：可视化绘制地形/排水口/初始水、目标与块池权重、尺寸调整、草稿自动保存、JSON 导入导出、直接试玩；试玩使用 `editor` 模式，不写星级/最高分/分享历史，退出后回到编辑器。
 - **60 张合同关卡**，选择页每 10 关一页（共 6 页），严格按顺序解锁：第 1 关默认开放，之后必须通关上一关。全部被贪心机器人验证可通关且目标/预算经标定；每日挑战、无尽模式可玩。
-- **新手教程**（5 步，`levels/tutorial.json` + `core/tutorial.ts` 纯谓词 + `stores/tutorialStore.ts` 旁路观察者 + `components/TutorialOverlay.vue`）已完成；`progressStore.tutorialDone` 落盘，旧存档缺字段视为未完成。
+- **新手教程**（5 步，`levels/tutorial.json` + `core/tutorial.ts` 纯谓词 + `stores/tutorialStore.ts` 旁路观察者 + `components/TutorialOverlay.vue` + `components/TutorialIntro.vue`）已完成；`progressStore.tutorialDone` 落盘，旧存档缺字段视为未完成。
 - 测试：19 个文件 / 177 用例全绿（守恒、碰撞、排水计分、确定性、回放一致性、短码往返、60 关可通关、分页/顺序解锁、模式可玩、教程谓词/状态机/旧存档/哈希不变、展示层隔离、回放投放与自然终局、回放逐帧下落与时长对齐、编辑器画笔/缩放/目标/校验）。
 - 构建：JS 807.2 kB（gzip 220.2 kB）· CSS 56.7 kB（gzip 11.5 kB）。
 
@@ -70,8 +70,9 @@
 - **「再打一次」只回默认视角、丢掉玩家自己的视角**：上一次修复把 watch 键换成 `runId` 后确实复位了，但复位的是 `refitForNewScene()` 的**默认**正面取景，玩家在打这一局时拖过/缩过的视角被一起抹掉。修法：`CameraController` 加 `capturePose()/restorePose()/keepView()`；`GameCanvas` 在 `triggerDrain` 之前抓一份 pose，重开同关卡时 `restorePose`，换关卡仍 `refitForNewScene`，局内按 R 只 `keepView`（一帧都不许动）。`CameraSnapshot` 必须带上 `manualZoom`——否则恢复后下一次 refit 会把玩家的缩放吃掉。
 - **回放曾是「只记落点」**：v4 分享码按块存 tick/列/旋转，回放只能把块「插」到落点，看不到一格一格横移和下落。升级到 **v5：完整操作流按 7bit/op 位打包**（3bit 动作 + 4bit tick 差，差值>=16 用转义 + 16bit）。播放端 `ReplayDriver` 在 `payload.o` 非空时改走操作流、正常重力（不再 `manualGravity`）；`playback()` 优先 `o`，`pl` 只作 v4 回退。空格硬降在规则里是单 tick，新增 `engine.hardDrops`（纯渲染日志、不进哈希）+ `DropTrails` + `VoxelRenderer.trailMesh` 播放 0.18s 飞落动画。**教训：只校验终局哈希的回放测试全部通过，但屏幕上一帧瞬移——必须按 tick 比对坐标。**
 - **箭头从来没被画出来**：管道/单向阀原来只做 `rotation.z = dir*90°`，而立方体旋转 90° 外观完全一样，所以图鉴写着「沿箭头方向」而屏幕上没有箭头。修法：`VoxelRenderer.arrowMesh`（ShapeGeometry 箭头，实例化）+ 落地格子与**飞行中的方块**都画；`Snapshot.piece.dir` 补齐；HUD 保留槽、Next 预览、主菜单图鉴用同一个 `arrowQuarterTurns(dir)`。**教训：CSS 三角/Three 箭头默认朝上，`dir` 本身就是转向次数（恒等映射）；写成 `dir-1` 会让箭头偏 90°，比不画更误导——`tests/arrow.test.ts` 用实例矩阵反解角度兜住。**
-- **教程气泡收起/自动重开**：`tutorialStore.dismissed` 只控制显示，不停止观察；`dismiss()` / `reopen()`；`watch(satisfied)` 在步骤完成的上升沿强制 `dismissed=false`，`next()` 也会清掉，保证「完成后一定弹出、下一步一定可见」。收起后保留顶部中央的小胶囊（避开四个角上的 HUD），点击可重新展开。
+- **新手教程是「先读后玩」+ 自动推进**：`startTutorial()` 只开落地页（`TutorialIntro.vue`，**唯一**有「跳过教程」的地方）；`begin()` 才载入第 1 步，且 `holdRun` 把 `gameStore.coachHold` 置真——`dispatch`/`stepOnce` 都提前返回，水流与输入全停，玩家关掉（`dismiss()`）提示才开始。达成谓词 → `satisfied` 上升沿重开气泡显示 ✔ 并 900ms 后自动 `next()`（无「下一步」按钮）。`briefed` 区分「首次简报」与「点胶囊回看」：回看不再冻结对局；`restart()`/`runId` 变化 = 新的一次简报。桌面端气泡居中（≤720px 退回底部卡片）。
 - **手机端没有任何重开按钮，而且「暂停」被自己的 click 立刻恢复**：`TouchControls` 原来只有六个落块动作；新加的暂停若在 `pointerdown` 上执行，抬手时会再合成一次 click，落到刚挂载的暂停遮罩上，触发 `.overlay @click.self` 立即 resume——看起来像按钮没反应。修法：meta 按钮改 `@click`，遮挡层关闭用 `click.self`；触摸条拆成「落块动作组」与「重开/暂停组」，窄屏（≤460px）两行布局，动作组在暂停/结束时才禁用，meta 组始终可点。另给暂停卡加右上角 ×，并让手机端 next/保留面板上移避开触摸条。
+- **最后一块用完后画面卡死**：终局判定不只在 `step()`（溢出/污染/堵排水口/达标），`lockPiece()` 里也有——最后一块落定触发 `outOfBlocks`，`hold` 换块无空间触发 `noSpace`，两者都发生在 `handleAction()` 内。store 原来只在 `stepOnce()` 里读 `status`，于是「硬降最后一块」这类操作会直接把循环停掉：没有下落的块，也没有失败卡，看起来就是死机。修法：`settleRun()` 统一收口终局（按 `runId` 幂等，防止重复触发 onWin 的延时器），dispatch 与 stepOnce 都调用；教程步骤失败也必须出卡（`ResultOverlay.cardVisible` 只对 tutorial 的**胜利**隐藏），`restart()` 用 `coachedRun` 保住教练标记，`tutorialStore` 里监听 `showResult` 的地方必须校验 `result.won`（否则失败会把步骤打成 ✔）。`tests/dispatchTerminal.test.ts` 兜住。
 ## 7. 下一步计划（未做）
 - 移动端手势（滑动旋转/缩放）与性能降级档位；端上 60fps 实测。
 - 商店页素材：三张截图（交汇变色、压力爆发、排空拉远）+ 宣传片分镜。

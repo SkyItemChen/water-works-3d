@@ -74,7 +74,7 @@ export function advanceTutorial(
   return stepForward(steps, state);
 }
 
-/** Manual "下一步" — the player (or the overlay) moves on regardless. */
+/** Advance one step regardless of predicates (the store's auto-advance). */
 export function forceAdvance(steps: TutorialStepData[], state: TutorialState): TutorialState {
   if (state.done || state.skipped) return state;
   return stepForward(steps, state);

@@ -9,14 +9,26 @@ import { useProgressStore } from '@/stores/progressStore';
 import { copyToClipboard } from '@/game/core/shareCode';
 import { todayKey } from '@/game/core/daily';
 import { isTutorialLevelId } from '@/game/core/level';
+import { useTutorialStore } from '@/stores/tutorialStore';
 
 const store = useGameStore();
 const progress = useProgressStore();
+const tutorial = useTutorialStore();
 
-/** Tutorial runs are coached by TutorialOverlay: no result card, no share code. */
+/** Tutorial runs are coached by TutorialOverlay: no win card, no share code. */
 const inTutorial = computed(() => !!store.level && isTutorialLevelId(store.level.id));
 const inEditor = computed(() => store.mode === 'editor');
-const cardVisible = computed(() => store.showResult && !!store.result && !inTutorial.value);
+/**
+ * A coached step's *win* belongs to the coach (the bubble shows the ✔ and the
+ * tutorial advances by itself), but a *failure* — block budget spent, drain
+ * blocked — has to be explained. Hiding it left the board frozen with the coach
+ * still coaching a dead run and no way forward.
+ */
+const cardVisible = computed(() => {
+  if (!store.showResult || !store.result) return false;
+  if (inTutorial.value && store.result.won) return false;
+  return true;
+});
 
 const result = computed(() => store.result);
 const won = computed(() => !!result.value?.won);
@@ -65,7 +77,10 @@ function retry(): void {
 
 function quit(): void {
   store.closeResult();
-  store.leaveRun();
+  // Leaving a failed tutorial step means leaving the tutorial: the coach would
+  // otherwise keep its bubble (and its step pointer) over the main menu.
+  if (inTutorial.value) tutorial.quitTutorial();
+  else store.leaveRun();
 }
 </script>
 

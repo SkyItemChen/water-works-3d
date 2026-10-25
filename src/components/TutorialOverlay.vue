@@ -1,15 +1,18 @@
 <script setup lang="ts">
 /**
- * TutorialOverlay — a non-blocking coach layer painted ABOVE GameCanvas.
+ * TutorialOverlay — the coach bubble painted above GameCanvas.
  *
- * It is purely presentational: it reads the tutorial store's current step and
- * paints a hint bubble, a step counter and the escape hatches (收起 / 跳过 /
- * 下一步). Highlighting is expressed with props/classes only — GameCanvas'
- * rendering logic is never touched, and no Three.js object is created here.
+ * Two modes, both presentation-only:
+ *  - briefing: the step has just opened; the run is held by the tutorial store
+ *    (`game.coachHold`), so the bubble is a centred prompt and closing it is
+ *    what starts the water. No 下一步 button: clearing the step advances by
+ *    itself (the store owns that timer), and 跳过教程 lives on the tutorial's
+ *    own landing page, not here.
+ *  - playing: the bubble is folded into the top-centre chip; clicking it re-opens
+ *    a *read-only* copy (a read never freezes a run in progress).
  *
- * The bubble is dismissible so it never fights the player for board space. It
- * is only folded away, not stopped: the tutorial keeps observing the run, and
- * completing a step (or starting the next one) brings it back automatically.
+ * Highlighting is expressed with props/classes only — GameCanvas' rendering
+ * logic is never touched, and no Three.js object is created here.
  */
 import { computed } from 'vue';
 import { useTutorialStore } from '@/stores/tutorialStore';
@@ -28,6 +31,7 @@ const step = computed(() => tutorial.step);
 const visible = computed(
   () =>
     tutorial.running &&
+    !tutorial.intro &&
     !!tutorial.step &&
     !!store.level &&
     isTutorialLevelId(store.level.id),
@@ -37,6 +41,8 @@ const visible = computed(
  * re-opens it (the store enforces that), so this is only "hidden while working".
  */
 const bubbleOpen = computed(() => visible.value && !tutorial.dismissed);
+/** The run is waiting on this bubble: read it, close it, then play. */
+const briefing = computed(() => bubbleOpen.value && tutorial.holdRun);
 
 /** Step counter shared by the bubble and the collapsed chip. */
 const counter = computed(() => tutorial.label);
@@ -46,20 +52,12 @@ const progressPct = computed(() => {
   return Math.round(((tutorial.state.stepIndex + 1) / total) * 100);
 });
 
-function onNext(): void {
-  tutorial.next();
-}
-
-function onSkip(): void {
-  tutorial.skip();
-}
-
-/** Close the coach for now; observation keeps running behind it. */
-function onDismiss(): void {
+/** Closing the briefing starts the step; closing a read-only bubble just folds it. */
+function onClose(): void {
   tutorial.dismiss();
 }
 
-/** Re-open from the collapsed chip. */
+/** Re-open from the collapsed chip (never re-arms the hold). */
 function onReopen(): void {
   tutorial.reopen();
 }
@@ -68,6 +66,9 @@ function onReopen(): void {
 <template>
   <Transition name="tut">
     <div v-if="visible" class="tutorial" role="region" aria-label="新手教程">
+      <!-- Dim the well while the run is held, so the prompt reads as a gate. -->
+      <div v-if="briefing" class="briefing-shade" aria-hidden="true"></div>
+
       <!-- Column highlight band, drawn behind the bubble. Hidden together with
            the bubble: closing the coach should give a clean view of the well. -->
       <div v-if="bubbleOpen" class="column-marks" aria-hidden="true">
@@ -79,29 +80,30 @@ function onReopen(): void {
         ></i>
       </div>
 
-      <!-- Collapsed chip: the only thing on screen after 收起. Click to reopen. -->
+      <!-- Collapsed chip: the only thing on screen after closing. Click to re-read. -->
       <button
         v-if="!bubbleOpen"
         class="coach-chip"
         :class="{ cleared: tutorial.satisfied }"
         type="button"
-        :aria-label="`重新打开新手教程（${counter}）`"
+        :aria-label="`重新查看新手教程（${counter}）`"
         @click="onReopen"
       >
         <span class="chip-dot" aria-hidden="true">{{ tutorial.satisfied ? '✔' : '?' }}</span>
         <span class="chip-label">教程 {{ counter }}</span>
       </button>
 
-      <div v-if="bubbleOpen" class="bubble" :class="{ cleared: tutorial.satisfied }">
+      <div v-if="bubbleOpen" class="bubble" :class="{ cleared: tutorial.satisfied, briefing }">
         <header>
           <span class="kicker">新手教程</span>
           <span class="counter">{{ tutorial.label }}</span>
           <button
+            v-if="!tutorial.satisfied"
             class="close"
             type="button"
-            title="收起教程（完成本步后会再次弹出）"
-            aria-label="收起新手教程"
-            @click="onDismiss"
+            :title="briefing ? '关闭提示并开始本步' : '收起教程'"
+            :aria-label="briefing ? '关闭提示并开始本步' : '收起新手教程'"
+            @click="onClose"
           >×</button>
         </header>
 
@@ -115,12 +117,18 @@ function onReopen(): void {
         <div class="bar"><i :style="{ width: progressPct + '%' }"></i></div>
 
         <div class="actions">
-          <!-- Skip is always available; 下一步 unlocks only once the engine event
-               for this step fired, so progression stays event-driven. -->
-          <button class="ghost" @click="onSkip">跳过教程</button>
-          <button class="primary" :disabled="!tutorial.satisfied" @click="onNext">
-            {{ tutorial.isLastStep ? '完成' : '下一步' }}
-          </button>
+          <!-- No 下一步 / 跳过 here: clearing the step advances on its own, and
+               skipping is a landing-page decision. -->
+          <p v-if="tutorial.satisfied" class="auto-note">
+            <span class="spinner" aria-hidden="true"></span>
+            {{ tutorial.isLastStep ? '教程完成，正在返回主菜单…' : '本步完成，正在进入下一步…' }}
+          </p>
+          <template v-else>
+            <button class="primary" type="button" @click="onClose">
+              {{ tutorial.briefed ? '收起提示' : '开始本步' }}
+            </button>
+            <span v-if="briefing" class="gate-note">关闭提示后水流才会启动</span>
+          </template>
         </div>
       </div>
     </div>
@@ -133,6 +141,14 @@ function onReopen(): void {
   inset: 0;
   pointer-events: none;
   z-index: 26;
+}
+/* Sits between the board and the bubble while the run is held. Never swallows
+   clicks: the pause menu and HUD stay reachable. */
+.briefing-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(58% 48% at 50% 50%, rgba(4, 10, 16, 0.28), rgba(4, 10, 16, 0.66));
 }
 .column-marks {
   position: absolute;
@@ -161,11 +177,13 @@ function onReopen(): void {
     opacity: 0.9;
   }
 }
+/* Desktop: dead centre — the run is held, so covering the well is the point. */
 .bubble {
   position: absolute;
-  left: clamp(1rem, 4vw, 2.4rem);
-  bottom: clamp(5.6rem, 12vh, 8rem);
-  width: min(390px, calc(100vw - 2rem));
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(430px, calc(100vw - 2rem));
   pointer-events: auto;
   padding: 0.95rem 1.05rem 0.85rem;
   border-radius: 15px;
@@ -174,6 +192,10 @@ function onReopen(): void {
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(8px);
   color: #e3f0f8;
+}
+.bubble.briefing {
+  border-color: rgba(127, 233, 255, 0.42);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.62), 0 0 0 1px rgba(127, 233, 255, 0.12) inset;
 }
 .bubble.cleared {
   border-color: rgba(126, 226, 168, 0.5);
@@ -312,11 +334,12 @@ function onReopen(): void {
 }
 .actions {
   display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 2rem;
 }
 .actions button {
-  padding: 0.42rem 0.85rem;
+  padding: 0.42rem 0.95rem;
   border-radius: 9px;
   font-size: 0.76rem;
   cursor: pointer;
@@ -335,12 +358,31 @@ function onReopen(): void {
   color: #eafaff;
   font-weight: 620;
 }
-.actions button:disabled {
-  opacity: 0.42;
-  cursor: not-allowed;
+.gate-note {
+  margin: 0;
+  font-size: 0.68rem;
+  color: #8fa9bd;
 }
-.actions button.ghost {
-  color: #93aec0;
+.auto-note {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.76rem;
+  color: #9fdcbd;
+}
+.spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 2px solid rgba(126, 226, 168, 0.28);
+  border-top-color: #7ee2a8;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 .tut-enter-active,
 .tut-leave-active {
@@ -351,12 +393,17 @@ function onReopen(): void {
   opacity: 0;
   transform: translateY(8px);
 }
+/* Narrow screens keep the bubble as a bottom sheet: a centred card would cover
+   the whole well plus the touch pad. */
 @media (max-width: 720px) {
   .bubble {
     left: 0.6rem;
     right: 0.6rem;
-    width: auto;
+    top: auto;
     bottom: 5.4rem;
+    transform: none;
+    width: auto;
+    padding: 0.95rem 1rem 0.9rem;
   }
   .coach-chip {
     top: 0.55rem;

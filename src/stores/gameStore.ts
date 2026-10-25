@@ -50,6 +50,16 @@ export const useGameStore = defineStore('game', () => {
 
   // --- Runtime UI state ----------------------------------------------------
   const paused = ref(false);
+  /**
+   * Tutorial briefing gate: while a coached step's instruction is still on
+   * screen the run is held — no tick, no piece input. It is *not* `paused` (no
+   * pause menu, and the water does not move either) and it is not a rule:
+   * nothing about the gate ever reaches the engine, the hash, a replay or a
+   * share code.
+   *
+   * Only the tutorial store writes it.
+   */
+  const coachHold = ref(false);
   const snapshot = shallowRef<EngineSnapshot | null>(null);
   const preview = shallowRef<SimPreview | null>(null);
   const showResult = ref(false);
@@ -63,6 +73,12 @@ export const useGameStore = defineStore('game', () => {
    * win treatment (camera pull-back, result card). Never read by the engine.
    */
   const suppressWinPresentation = ref(false);
+  /**
+   * Presentation-only: was the current run started as a coached tutorial step?
+   * Kept apart from suppressWinPresentation because that flag is reset on every
+   * new engine, while a retry of the very same step must stay coached.
+   */
+  let coachedRun = false;
   const winHoldMs = 3400;
 
   const replaySession = shallowRef<ReplaySession | null>(null);
@@ -80,6 +96,8 @@ export const useGameStore = defineStore('game', () => {
   const runId = ref(0);
 
   let hudTimer = 0;
+  /** runId that already handed a verdict to the result flow (see settleRun). */
+  let settledRunId = -1;
   let winTimer: ReturnType<typeof setTimeout> | null = null;
   let previewTimer = 0;
   let lastEventCursor = 0;
@@ -122,6 +140,7 @@ export const useGameStore = defineStore('game', () => {
     level.value = markRaw(levelDef);
     mode.value = gameMode;
     suppressWinPresentation.value = false;
+    coachedRun = false;
     const e = new GameEngine({ level: levelDef, mode: gameMode });
     engine.value = e;
     runId.value += 1;
@@ -142,7 +161,8 @@ export const useGameStore = defineStore('game', () => {
     audio.init();
     runReturnScreen.value = 'menu';
     newEngine(def, 'contract');
-    suppressWinPresentation.value = opts?.coached === true;
+    coachedRun = opts?.coached === true;
+    suppressWinPresentation.value = coachedRun;
     audio.play('ui');
   }
 
@@ -175,7 +195,14 @@ export const useGameStore = defineStore('game', () => {
 
   function restart(): void {
     if (!level.value) return;
+    const coached = coachedRun;
     newEngine(level.value, mode.value);
+    // A retry of an intermediate tutorial step is still a coached step: losing
+    // its coaching flag would make the retry end in a contract-style result card.
+    if (coached) {
+      coachedRun = true;
+      suppressWinPresentation.value = true;
+    }
     audio.play('ui');
   }
 
@@ -223,6 +250,8 @@ export const useGameStore = defineStore('game', () => {
   // --- Pause ---------------------------------------------------------------
   function togglePause(): void {
     if (screen.value !== 'game' || showResult.value) return;
+    // The briefing is already a modal gate; a pause menu on top of it is noise.
+    if (coachHold.value) return;
     paused.value = !paused.value;
     audio.play('ui');
   }
@@ -231,15 +260,21 @@ export const useGameStore = defineStore('game', () => {
     paused.value = v;
   }
 
+  /** Owned by the tutorial store: see `coachHold`. */
+  function setCoachHold(v: boolean): void {
+    coachHold.value = v;
+  }
+
   // --- Action dispatch -----------------------------------------------------
   function dispatch(a: Action): void {
     const e = engine.value;
-    if (!e || paused.value || screen.value !== 'game') return;
+    if (!e || paused.value || coachHold.value || screen.value !== 'game') return;
     if (e.status !== 'playing') return;
     const before = e.piece?.kind;
     const applied = e.handleAction(a);
     if (!applied) {
       if (a === 'H' && e.holdUsed) audio.play('ui');
+      settleRun();
       return;
     }
     if (a === 'C') audio.play('rotate');
@@ -249,12 +284,17 @@ export const useGameStore = defineStore('game', () => {
     else audio.play('move');
     if ((a === 'A' || a === 'H') && before !== e.piece?.kind) audio.play('lock');
     publish(true);
+    // A hard drop of the final block (blockLimit reached), or a hold that leaves
+    // no room for the incoming piece, ends the run *inside* handleAction - not
+    // inside step(). Without handing over to the result flow here the loop just
+    // stops advancing (status !== 'playing') and the board freezes with no card.
+    settleRun();
   }
 
   // --- Per-tick advance ----------------------------------------------------
   function stepOnce(): void {
     const e = engine.value;
-    if (!e || paused.value || screen.value !== 'game') return;
+    if (!e || paused.value || coachHold.value || screen.value !== 'game') return;
     if (e.status !== 'playing') return;
 
     const prevBlocks = e.blocksUsed;
@@ -288,15 +328,7 @@ export const useGameStore = defineStore('game', () => {
 
     // `e.step()` can end the run; re-read the status through the engine's
     // public field so TypeScript does not keep the pre-step narrowing.
-    const status: string = e.status;
-    if (status === 'won') {
-      onWin();
-      return;
-    }
-    if (status === 'lost') {
-      onLose();
-      return;
-    }
+    if (settleRun()) return;
 
     hudTimer += 1 / 60;
     if (hudTimer >= 0.1) {
@@ -436,6 +468,31 @@ export const useGameStore = defineStore('game', () => {
     showResult.value = true;
   }
 
+  /**
+   * Hand a finished run over to the result flow, exactly once.
+   *
+   * The engine can reach a verdict from two places: step() (overflow, pollution,
+   * a blocked drain, goals met) and handleAction() (the final block locking, or
+   * a blocked spawn after a hold). Both must route through here - skipping the
+   * action path left status !== 'playing' with no card on screen, which is the
+   * bug where the board went silent once the last block was placed.
+   *
+   * Returns true when the run is over, so callers can stop their tick bookkeeping.
+   */
+  function settleRun(): boolean {
+    const e = engine.value;
+    if (!e) return false;
+    const status: string = e.status;
+    if (status === 'playing') return false;
+    // Idempotent per run: dispatch() and stepOnce() may both observe the same
+    // verdict, and a second onWin() would arm a duplicate result timer.
+    if (settledRunId === runId.value) return true;
+    settledRunId = runId.value;
+    if (status === 'won') onWin();
+    else onLose();
+    return true;
+  }
+
   function closeResult(): void {
     showResult.value = false;
   }
@@ -478,6 +535,7 @@ export const useGameStore = defineStore('game', () => {
     level,
     engine,
     paused,
+    coachHold,
     snapshot,
     preview,
     showResult,
@@ -513,6 +571,7 @@ export const useGameStore = defineStore('game', () => {
     openEditor,
     togglePause,
     setPaused,
+    setCoachHold,
     dispatch,
     stepOnce,
     publish,

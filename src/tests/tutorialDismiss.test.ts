@@ -1,90 +1,101 @@
-
 /**
- * Coaching bubble visibility.
+ * Tutorial briefing + auto-advance.
  *
- * The bubble must be foldable without stopping the tutorial, and must come back
- * on its own at exactly two moments: when the current step is completed, and
- * when the next step starts. Any other behaviour either hides a finished step
- * (player never sees ✔ / 下一步) or keeps nagging while the player is working.
+ * New flow under test:
+ *  - the tutorial opens on its own landing page (the only place with 跳过教程);
+ *  - a step starts with its prompt open and the run *held* — closing the prompt
+ *    is what starts the water;
+ *  - clearing the step re-opens the prompt with ✔ and advances by itself, so
+ *    there is no 下一步 button left to press.
  */
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { useTutorialStore } from '../stores/tutorialStore';
 import { useGameStore } from '../stores/gameStore';
 
-describe('tutorial bubble dismissal', () => {
+type Tutorial = ReturnType<typeof useTutorialStore>;
+type Game = ReturnType<typeof useGameStore>;
+
+describe('tutorial briefing', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
   });
 
-  function start(): { tutorial: ReturnType<typeof useTutorialStore>; game: ReturnType<typeof useGameStore> } {
+  function start(): { tutorial: Tutorial; game: Game } {
     const tutorial = useTutorialStore();
     const game = useGameStore();
     tutorial.startTutorial();
     return { tutorial, game };
   }
 
-  it('starts open', () => {
-    const { tutorial } = start();
+  it('opens on the landing page without loading a level', () => {
+    const { tutorial, game } = start();
     expect(tutorial.running).toBe(true);
-    expect(tutorial.dismissed).toBe(false);
+    expect(tutorial.intro).toBe(true);
+    expect(game.screen).toBe('menu');
+    expect(game.level).toBeNull();
+    // Nothing is gated yet: there is no board to hold.
+    expect(game.coachHold).toBe(false);
   });
 
-  it('dismiss() folds the bubble but keeps the tutorial running', () => {
-    const { tutorial } = start();
+  it('begin() loads step 1 with the prompt open and the run held', () => {
+    const { tutorial, game } = start();
+    tutorial.begin();
+    expect(tutorial.intro).toBe(false);
+    expect(tutorial.step?.stepId).toBe('t01');
+    expect(tutorial.dismissed).toBe(false);
+    expect(tutorial.briefed).toBe(false);
+    expect(game.screen).toBe('game');
+    expect(game.coachHold).toBe(true);
+  });
+
+  it('the held run ignores input and does not tick', () => {
+    const { tutorial, game } = start();
+    tutorial.begin();
+    const engine = game.engine!;
+    const tick = engine.tick;
+
+    game.dispatch('A');
+    game.stepOnce();
+
+    expect(engine.tick).toBe(tick);
+    expect(engine.blocksUsed).toBe(0);
+  });
+
+  it('closing the prompt starts the step', () => {
+    const { tutorial, game } = start();
+    tutorial.begin();
     tutorial.dismiss();
     expect(tutorial.dismissed).toBe(true);
+    expect(tutorial.briefed).toBe(true);
     expect(tutorial.running).toBe(true);
-    expect(tutorial.step?.stepId).toBe('t01');
+    expect(game.coachHold).toBe(false);
+
+    game.stepOnce();
+    expect(game.engine!.tick).toBe(1);
   });
 
-  it('reopen() brings the same step back without advancing', () => {
-    const { tutorial } = start();
+  it('re-reading the prompt mid-run never freezes the board again', () => {
+    const { tutorial, game } = start();
+    tutorial.begin();
     tutorial.dismiss();
     tutorial.reopen();
     expect(tutorial.dismissed).toBe(false);
+    expect(game.coachHold).toBe(false);
     expect(tutorial.step?.stepId).toBe('t01');
     expect(tutorial.state.stepIndex).toBe(0);
   });
 
-  it('completing a step re-opens a dismissed bubble', () => {
-    const { tutorial } = start();
+  it('a retry of the same step briefs again', async () => {
+    const { tutorial, game } = start();
+    tutorial.begin();
     tutorial.dismiss();
-    expect(tutorial.dismissed).toBe(true);
-
-    // This is the same edge TutorialOverlay reads: the predicate fires while the
-    // bubble is closed, so the player must be shown the ✔.
-    tutorial.notifyStepComplete();
-    expect(tutorial.satisfied).toBe(true);
+    game.restart();
+    await nextTick();
     expect(tutorial.dismissed).toBe(false);
-  });
-
-  it('starting the next step re-opens it even if it were somehow still closed', () => {
-    const { tutorial } = start();
-    tutorial.notifyStepComplete();
-    tutorial.next();
-    expect(tutorial.state.stepIndex).toBe(1);
-    expect(tutorial.dismissed).toBe(false);
-    expect(tutorial.satisfied).toBe(false);
-  });
-
-  it('closing a completed bubble does not undo the completion', () => {
-    const { tutorial } = start();
-    tutorial.notifyStepComplete();
-    tutorial.dismiss();
-    expect(tutorial.satisfied).toBe(true);
-    expect(tutorial.dismissed).toBe(true);
-    // The next button only depends on `satisfied`, so it stays available.
-    tutorial.next();
-    expect(tutorial.state.stepIndex).toBe(1);
-  });
-
-  it('a fresh tutorial always opens the bubble again', () => {
-    const { tutorial } = start();
-    tutorial.dismiss();
-    tutorial.startTutorial();
-    expect(tutorial.dismissed).toBe(false);
-    expect(tutorial.state.stepIndex).toBe(0);
+    expect(tutorial.briefed).toBe(false);
+    expect(game.coachHold).toBe(true);
   });
 
   it('dismissing outside a tutorial is a no-op', () => {
@@ -92,12 +103,67 @@ describe('tutorial bubble dismissal', () => {
     tutorial.dismiss();
     expect(tutorial.dismissed).toBe(false);
   });
+});
 
-  it('skip and finish clear the dismissed flag', () => {
-    const { tutorial } = start();
+describe('tutorial auto-advance', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    const tutorial = useTutorialStore();
+    tutorial.reset();
+  });
+
+  function running(): { tutorial: Tutorial; game: Game } {
+    const tutorial = useTutorialStore();
+    const game = useGameStore();
+    tutorial.startTutorial();
+    tutorial.begin();
     tutorial.dismiss();
+    return { tutorial, game };
+  }
+
+  it('shows the ✔ and moves on by itself, with no button to press', () => {
+    const { tutorial, game } = running();
+    tutorial.notifyStepComplete();
+    expect(tutorial.satisfied).toBe(true);
+    // The prompt re-opens for the ✔ and the board is held while it is shown.
+    expect(tutorial.dismissed).toBe(false);
+    expect(game.coachHold).toBe(true);
+    // The pointer has not moved yet: the ✔ beat is on screen.
+    expect(tutorial.state.stepIndex).toBe(0);
+
+    vi.advanceTimersByTime(900);
+
+    expect(tutorial.state.stepIndex).toBe(1);
+    expect(tutorial.step?.stepId).toBe('t02');
+    expect(tutorial.satisfied).toBe(false);
+    // The next step opens with its own briefing, so the run stays held.
+    expect(tutorial.dismissed).toBe(false);
+    expect(game.coachHold).toBe(true);
+  });
+
+  it('finishes the tutorial after the last step', () => {
+    const { tutorial } = running();
+    tutorial.state.stepIndex = tutorial.state.totalSteps - 1;
+    tutorial.notifyStepComplete();
+    vi.advanceTimersByTime(900);
+
+    expect(tutorial.running).toBe(false);
+    expect(tutorial.intro).toBe(false);
+    expect(tutorial.state.done).toBe(true);
+  });
+
+  it('skip() ends the tutorial and clears every gate', () => {
+    const { tutorial, game } = running();
     tutorial.skip();
     expect(tutorial.running).toBe(false);
-    expect(tutorial.dismissed).toBe(false);
+    expect(tutorial.intro).toBe(false);
+    expect(tutorial.satisfied).toBe(false);
+    expect(tutorial.state.skipped).toBe(true);
+    expect(game.coachHold).toBe(false);
+    expect(game.screen).toBe('menu');
   });
 });
