@@ -77,7 +77,7 @@ function loadCode(): void {
         <button class="mode-card" @click="store.openLevels()">
           <div class="icon">📜</div>
           <h2>合同模式</h2>
-          <p>30 份可玩合同，数据层支持 60 关。每 5 关一个新机制。</p>
+          <p>60 份可玩合同，每 10 关一页；通过上一关解锁下一关。</p>
           <div class="stat">
             <span>{{ cleared }}/{{ totalLevels }} 通关</span>
             <span>★ {{ stars }}/{{ totalLevels * 3 }}</span>
@@ -107,10 +107,10 @@ function loadCode(): void {
         <button class="mode-card editor" @click="store.openEditor()">
           <div class="icon">🧱</div>
           <h2>关卡编辑器</h2>
-          <p>预览版：结构化关卡数据、JSON 导入导出。长期更新。</p>
+          <p>可视化绘制地形、排水口、初始水与目标，直接试玩并导出 JSON。</p>
           <div class="stat">
-            <span>P2 预留</span>
-            <span>只读预览</span>
+            <span>可视化编辑</span>
+            <span>可试玩</span>
           </div>
         </button>
       </div>

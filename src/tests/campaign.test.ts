@@ -1,6 +1,6 @@
 
 /**
- * Ladder checks for the 30-contract campaign.
+ * Ladder checks for the 60-contract campaign.
  *
  * `levels.test.ts` proves each level is *clearable*. That alone is too weak: an
  * unreachable goal with a huge budget also passes as long as the bot happens to
@@ -65,10 +65,10 @@ function play(level: LevelDefinition): GameEngine {
 describe('campaign ladder', () => {
   const levels = contractLevels();
 
-  it('ships exactly 30 contracts, numbered 1..30 in order', () => {
-    expect(levels.length).toBe(30);
-    expect(levels.map((l) => l.index)).toEqual(Array.from({ length: 30 }, (_, i) => i + 1));
-    expect(levels.map((l) => l.id)).toEqual(Array.from({ length: 30 }, (_, i) => `c${String(i + 1).padStart(2, '0')}`));
+  it('ships exactly 60 contracts, numbered 1..60 in order', () => {
+    expect(levels.length).toBe(60);
+    expect(levels.map((l) => l.index)).toEqual(Array.from({ length: 60 }, (_, i) => i + 1));
+    expect(levels.map((l) => l.id)).toEqual(Array.from({ length: 60 }, (_, i) => `c${String(i + 1).padStart(2, '0')}`));
   });
 
   it('every id resolves and every level passes schema validation', () => {
@@ -79,9 +79,9 @@ describe('campaign ladder', () => {
   });
 
   it('ids, names and seeds are unique', () => {
-    expect(new Set(levels.map((l) => l.id)).size).toBe(30);
-    expect(new Set(levels.map((l) => l.name)).size).toBe(30);
-    expect(new Set(levels.map((l) => l.seed)).size).toBe(30);
+    expect(new Set(levels.map((l) => l.id)).size).toBe(60);
+    expect(new Set(levels.map((l) => l.name)).size).toBe(60);
+    expect(new Set(levels.map((l) => l.seed)).size).toBe(60);
   });
 
   it('every level has goals, a non-empty pool and a real budget', () => {
@@ -129,15 +129,15 @@ describe('campaign ladder', () => {
 });
 
 describe('new contracts are beatable and par-tight', () => {
-  const added = contractLevels().filter((l) => Number(l.id.slice(1)) >= 13);
+  const added = contractLevels().filter((l) => Number(l.id.slice(1)) >= 31);
 
   // Each play() call is many seconds of synchronous bot search. Yielding between
   // levels lets the vitest worker flush its progress RPC, which otherwise times
   // out ("Timeout calling onTaskUpdate") on slow CI runners.
   const yieldToRunner = () => new Promise<void>((resolve) => setImmediate(resolve));
 
-  it('covers 18 new levels', () => {
-    expect(added.length).toBe(18);
+  it('covers 30 new levels', () => {
+    expect(added.length).toBe(30);
   });
 
   it('each new level is clearable by the reference bot', async () => {
