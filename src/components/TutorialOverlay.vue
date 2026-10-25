@@ -3,9 +3,13 @@
  * TutorialOverlay — a non-blocking coach layer painted ABOVE GameCanvas.
  *
  * It is purely presentational: it reads the tutorial store's current step and
- * paints a hint bubble, a step counter and the two escape hatches (跳过 / 下一步).
- * Highlighting is expressed with props/classes only — GameCanvas' rendering
- * logic is never touched, and no Three.js object is created here.
+ * paints a hint bubble, a step counter and the escape hatches (收起 / 跳过 /
+ * 下一步). Highlighting is expressed with props/classes only — GameCanvas'
+ * rendering logic is never touched, and no Three.js object is created here.
+ *
+ * The bubble is dismissible so it never fights the player for board space. It
+ * is only folded away, not stopped: the tutorial keeps observing the run, and
+ * completing a step (or starting the next one) brings it back automatically.
  */
 import { computed } from 'vue';
 import { useTutorialStore } from '@/stores/tutorialStore';
@@ -28,6 +32,15 @@ const visible = computed(
     !!store.level &&
     isTutorialLevelId(store.level.id),
 );
+/**
+ * The bubble is open unless the player folded it away. A completed step always
+ * re-opens it (the store enforces that), so this is only "hidden while working".
+ */
+const bubbleOpen = computed(() => visible.value && !tutorial.dismissed);
+
+/** Step counter shared by the bubble and the collapsed chip. */
+const counter = computed(() => tutorial.label);
+
 const progressPct = computed(() => {
   const total = tutorial.total || 1;
   return Math.round(((tutorial.state.stepIndex + 1) / total) * 100);
@@ -40,13 +53,24 @@ function onNext(): void {
 function onSkip(): void {
   tutorial.skip();
 }
+
+/** Close the coach for now; observation keeps running behind it. */
+function onDismiss(): void {
+  tutorial.dismiss();
+}
+
+/** Re-open from the collapsed chip. */
+function onReopen(): void {
+  tutorial.reopen();
+}
 </script>
 
 <template>
   <Transition name="tut">
     <div v-if="visible" class="tutorial" role="region" aria-label="新手教程">
-      <!-- Column highlight band, drawn behind the bubble -->
-      <div class="column-marks" aria-hidden="true">
+      <!-- Column highlight band, drawn behind the bubble. Hidden together with
+           the bubble: closing the coach should give a clean view of the well. -->
+      <div v-if="bubbleOpen" class="column-marks" aria-hidden="true">
         <i
           v-for="c in step?.highlight.columns ?? []"
           :key="`col-${c}`"
@@ -55,10 +79,30 @@ function onSkip(): void {
         ></i>
       </div>
 
-      <div class="bubble" :class="{ cleared: tutorial.satisfied }">
+      <!-- Collapsed chip: the only thing on screen after 收起. Click to reopen. -->
+      <button
+        v-if="!bubbleOpen"
+        class="coach-chip"
+        :class="{ cleared: tutorial.satisfied }"
+        type="button"
+        :aria-label="`重新打开新手教程（${counter}）`"
+        @click="onReopen"
+      >
+        <span class="chip-dot" aria-hidden="true">{{ tutorial.satisfied ? '✔' : '?' }}</span>
+        <span class="chip-label">教程 {{ counter }}</span>
+      </button>
+
+      <div v-if="bubbleOpen" class="bubble" :class="{ cleared: tutorial.satisfied }">
         <header>
           <span class="kicker">新手教程</span>
           <span class="counter">{{ tutorial.label }}</span>
+          <button
+            class="close"
+            type="button"
+            title="收起教程（完成本步后会再次弹出）"
+            aria-label="收起新手教程"
+            @click="onDismiss"
+          >×</button>
         </header>
 
         <h3>{{ step?.title }}</h3>
@@ -137,9 +181,83 @@ function onSkip(): void {
 }
 .bubble header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0.35rem;
+}
+.bubble header .counter {
+  margin-left: auto;
+}
+/* The close affordance must read as a control, not decoration. */
+.bubble .close {
+  flex: 0 0 auto;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 190, 230, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: #9fbccd;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.16s ease;
+}
+.bubble .close:hover {
+  border-color: rgba(127, 233, 255, 0.5);
+  color: #eafaff;
+  background: rgba(127, 233, 255, 0.1);
+}
+.coach-chip {
+  /* Top-centre: the HUD owns the corners (level card top-left, ledger
+     bottom-left, next-preview bottom-right), so a corner chip collides with it. */
+  position: absolute;
+  top: 0.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem 0.4rem 0.42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(127, 233, 255, 0.3);
+  background: linear-gradient(160deg, rgba(16, 30, 42, 0.94), rgba(9, 15, 21, 0.94));
+  color: #cfe4f1;
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(8px);
+  transition: 0.16s ease;
+}
+.coach-chip:hover {
+  border-color: rgba(127, 233, 255, 0.6);
+  transform: translateX(-50%) translateY(-1px);
+}
+.coach-chip.cleared {
+  border-color: rgba(126, 226, 168, 0.55);
+}
+.chip-dot {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #08221a;
+  background: linear-gradient(135deg, #7ee2a8, #4ecf8a);
+}
+.coach-chip:not(.cleared) .chip-dot {
+  color: #06202b;
+  background: linear-gradient(135deg, #7fe9ff, #2a9dc4);
+}
+.chip-label {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 .kicker {
   font-size: 0.6rem;
@@ -239,6 +357,9 @@ function onSkip(): void {
     right: 0.6rem;
     width: auto;
     bottom: 5.4rem;
+  }
+  .coach-chip {
+    top: 0.55rem;
   }
 }
 </style>

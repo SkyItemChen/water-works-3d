@@ -567,4 +567,17 @@ h1 {
     min-width: 0;
   }
 }
+/* The touch bar owns the bottom of the screen on phones, so the next/hold
+   panel must clear it instead of overlapping the new 重开 / 暂停 buttons. */
+@media (max-width: 900px) and (pointer: coarse) {
+  .next-panel {
+    margin-bottom: 4.1rem;
+  }
+}
+/* Two-row touch bar on narrow phones; the next preview must clear both rows. */
+@media (max-width: 460px) and (pointer: coarse) {
+  .next-panel {
+    margin-bottom: 7.4rem;
+  }
+}
 </style>

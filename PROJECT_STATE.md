@@ -69,6 +69,8 @@
 - **「再打一次」只回默认视角、丢掉玩家自己的视角**：上一次修复把 watch 键换成 `runId` 后确实复位了，但复位的是 `refitForNewScene()` 的**默认**正面取景，玩家在打这一局时拖过/缩过的视角被一起抹掉。修法：`CameraController` 加 `capturePose()/restorePose()/keepView()`；`GameCanvas` 在 `triggerDrain` 之前抓一份 pose，重开同关卡时 `restorePose`，换关卡仍 `refitForNewScene`，局内按 R 只 `keepView`（一帧都不许动）。`CameraSnapshot` 必须带上 `manualZoom`——否则恢复后下一次 refit 会把玩家的缩放吃掉。
 - **回放曾是「只记落点」**：v4 分享码按块存 tick/列/旋转，回放只能把块「插」到落点，看不到一格一格横移和下落。升级到 **v5：完整操作流按 7bit/op 位打包**（3bit 动作 + 4bit tick 差，差值>=16 用转义 + 16bit）。播放端 `ReplayDriver` 在 `payload.o` 非空时改走操作流、正常重力（不再 `manualGravity`）；`playback()` 优先 `o`，`pl` 只作 v4 回退。空格硬降在规则里是单 tick，新增 `engine.hardDrops`（纯渲染日志、不进哈希）+ `DropTrails` + `VoxelRenderer.trailMesh` 播放 0.18s 飞落动画。**教训：只校验终局哈希的回放测试全部通过，但屏幕上一帧瞬移——必须按 tick 比对坐标。**
 - **箭头从来没被画出来**：管道/单向阀原来只做 `rotation.z = dir*90°`，而立方体旋转 90° 外观完全一样，所以图鉴写着「沿箭头方向」而屏幕上没有箭头。修法：`VoxelRenderer.arrowMesh`（ShapeGeometry 箭头，实例化）+ 落地格子与**飞行中的方块**都画；`Snapshot.piece.dir` 补齐；HUD 保留槽、Next 预览、主菜单图鉴用同一个 `arrowQuarterTurns(dir)`。**教训：CSS 三角/Three 箭头默认朝上，`dir` 本身就是转向次数（恒等映射）；写成 `dir-1` 会让箭头偏 90°，比不画更误导——`tests/arrow.test.ts` 用实例矩阵反解角度兜住。**
+- **教程气泡收起/自动重开**：`tutorialStore.dismissed` 只控制显示，不停止观察；`dismiss()` / `reopen()`；`watch(satisfied)` 在步骤完成的上升沿强制 `dismissed=false`，`next()` 也会清掉，保证「完成后一定弹出、下一步一定可见」。收起后保留顶部中央的小胶囊（避开四个角上的 HUD），点击可重新展开。
+- **手机端没有任何重开按钮，而且「暂停」被自己的 click 立刻恢复**：`TouchControls` 原来只有六个落块动作；新加的暂停若在 `pointerdown` 上执行，抬手时会再合成一次 click，落到刚挂载的暂停遮罩上，触发 `.overlay @click.self` 立即 resume——看起来像按钮没反应。修法：meta 按钮改 `@click`，遮挡层关闭用 `click.self`；触摸条拆成「落块动作组」与「重开/暂停组」，窄屏（≤460px）两行布局，动作组在暂停/结束时才禁用，meta 组始终可点。另给暂停卡加右上角 ×，并让手机端 next/保留面板上移避开触摸条。
 ## 7. 下一步计划（未做）
 - 关卡编辑器从只读预览升级为可编辑 + 导出 JSON 短码（P2）。
 - 移动端手势（滑动旋转/缩放）与性能降级档位；端上 60fps 实测。

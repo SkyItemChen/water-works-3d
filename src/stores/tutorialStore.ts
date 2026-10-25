@@ -46,6 +46,16 @@ export const useTutorialStore = defineStore('tutorial', () => {
   const running = ref(false);
   /** True once the current step's predicate has been satisfied. */
   const satisfied = ref(false);
+  /**
+   * The player folded the coach bubble away to get a clear view of the well.
+   *
+   * Dismissal is presentation-only: observation keeps running, so the step can
+   * still complete while the bubble is hidden. When it does, the bubble pops
+   * back so the player sees the ✔ and can move on. Starting the next step also
+   * re-opens it — a new instruction is never hidden by the previous step's
+   * "close".
+   */
+  const dismissed = ref(false);
 
   let prevBlocksUsed = 0;
   let prevPieceKind: BlockKind | null = null;
@@ -67,7 +77,19 @@ export const useTutorialStore = defineStore('tutorial', () => {
   function reset(): void {
     state.value = createTutorialState(steps.value);
     satisfied.value = false;
+    dismissed.value = false;
     resetCounters();
+  }
+
+  /** Fold the coach bubble away. Progress is unaffected. */
+  function dismiss(): void {
+    if (!running.value) return;
+    dismissed.value = true;
+  }
+
+  /** Show the bubble again without changing the step. */
+  function reopen(): void {
+    dismissed.value = false;
   }
 
   /**
@@ -106,6 +128,7 @@ export const useTutorialStore = defineStore('tutorial', () => {
     state.value = skipTutorial(steps.value, state.value);
     running.value = false;
     satisfied.value = false;
+    dismissed.value = false;
     progress.markTutorialDone();
     game.toMenu();
   }
@@ -115,6 +138,9 @@ export const useTutorialStore = defineStore('tutorial', () => {
     if (state.value.done) return;
     state.value = forceAdvance(steps.value, state.value);
     satisfied.value = false;
+    // A new instruction must be visible even if the player closed the previous
+    // (already completed) bubble.
+    dismissed.value = false;
     if (state.value.done) {
       finish();
       return;
@@ -124,9 +150,23 @@ export const useTutorialStore = defineStore('tutorial', () => {
 
   function finish(): void {
     running.value = false;
+    dismissed.value = false;
     progress.markTutorialDone();
     game.toMenu();
   }
+
+  /**
+   * Completing a step always brings the bubble back: the player needs to see the
+   * ✔ and press 下一步. This is deliberately keyed on the *satisfied* edge, not
+   * on every snapshot, so a hidden bubble stays hidden while the player works.
+   */
+  watch(
+    satisfied,
+    (done) => {
+      if (done && running.value) dismissed.value = false;
+    },
+    { flush: 'sync' },
+  );
 
   /**
    * Read one snapshot pair and evaluate the current step. Called by the watcher
@@ -222,6 +262,7 @@ export const useTutorialStore = defineStore('tutorial', () => {
     state,
     step,
     satisfied,
+    dismissed,
     label,
     total,
     isLastStep,
@@ -230,6 +271,8 @@ export const useTutorialStore = defineStore('tutorial', () => {
     skip,
     next,
     notifyStepComplete,
+    dismiss,
+    reopen,
     reset,
     observe,
   };

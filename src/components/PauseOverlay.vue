@@ -36,6 +36,7 @@ function quit(): void {
   <Transition name="fade">
     <div class="overlay" v-if="store.paused" @click.self="resume">
       <div class="card">
+        <button class="close" type="button" aria-label="继续游戏" @click="resume">×</button>
         <span class="kicker">已暂停</span>
         <h2>{{ level?.name ?? '游戏' }}</h2>
         <p class="desc">水会等你回来。检查一下水位、危险列和下一块。</p>
@@ -90,6 +91,7 @@ function quit(): void {
   backdrop-filter: blur(5px);
 }
 .card {
+  position: relative;
   width: min(460px, 92vw);
   background: linear-gradient(165deg, #101d29, #0a121a);
   border: 1px solid rgba(120, 190, 230, 0.22);
@@ -97,6 +99,32 @@ function quit(): void {
   padding: 1.4rem 1.5rem;
   color: #e9f2f8;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.card .close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  /* The shared `button { flex: 1; min-width: 100px }` rule below would stretch
+     this absolutely-positioned icon into a wide pill. */
+  flex: 0 0 auto;
+  min-width: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 190, 230, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: #9fbccd;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.card .close:hover {
+  border-color: rgba(127, 233, 255, 0.5);
+  color: #eafaff;
+  background: rgba(127, 233, 255, 0.1);
 }
 .kicker {
   font-size: 0.66rem;
