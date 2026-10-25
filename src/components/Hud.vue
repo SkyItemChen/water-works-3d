@@ -167,7 +167,7 @@ function fmt(v: number, digits = 1): string {
         <NextPreview :kinds="snap.next.slice(0, 3)" :cols="snap.cols" :rows="snap.rows" />
       </div>
       <div class="hold-row">
-        <span class="label">保留 (Shift)</span>
+        <span class="label">保留 <span class="key-hint">(Shift)</span></span>
         <div class="hold-slot" :class="{ used: holdUsed }">
           <div v-if="holdInfo" class="mini-block" :style="{ '--c': holdInfo.color }">
             <i v-for="(c, k) in holdInfo.cells" :key="k" :style="{ gridColumn: c.x + 1, gridRow: c.y + 1 }"></i>
@@ -542,7 +542,7 @@ h1 {
   padding: 0.32rem 0.8rem;
   pointer-events: none;
 }
-@media (max-width: 900px) {
+@media (max-width: 900px) and (orientation: portrait) {
   .hud {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto 1fr auto;
@@ -563,21 +563,67 @@ h1 {
     display: none;
   }
   .next-panel {
-    justify-self: end;
+    justify-self: stretch;
     min-width: 0;
+    /* A bottom dock: three cards plus hold in one short row instead of a tall
+       box that used to cover the lower-right cells of the board. */
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.34rem 0.55rem;
+  }
+  .next-panel h2 {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+  .next-row {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: flex-start;
+  }
+  .next-preview {
+    gap: 0.25rem;
+  }
+  .hold-row {
+    flex: 0 0 auto;
+    margin-top: 0;
+    gap: 0.35rem;
+  }
+  .hold-row .label {
+    font-size: 0.6rem;
+    white-space: nowrap;
+  }
+  .hold-row .key-hint {
+    display: none;
+  }
+  .hold-slot {
+    width: 2rem;
+    height: 2rem;
+  }
+  .mini-block {
+    grid-auto-rows: 0.45rem;
+  }
+  .mini-block i {
+    width: 0.45rem;
+    height: 0.45rem;
   }
 }
 /* The touch bar owns the bottom of the screen on phones, so the next/hold
    panel must clear it instead of overlapping the new 重开 / 暂停 buttons. */
 @media (max-width: 900px) and (pointer: coarse) {
   .next-panel {
-    margin-bottom: 4.1rem;
+    margin-bottom: 4.6rem;
   }
 }
-/* Two-row touch bar on narrow phones; the next preview must clear both rows. */
+/* Two-row touch bar on narrow phones. The NEXT dock moves into the empty
+   left half of the top row, so it costs no extra vertical play area. */
 @media (max-width: 460px) and (pointer: coarse) {
   .next-panel {
-    margin-bottom: 7.4rem;
+    position: absolute;
+    left: 0.3rem;
+    right: 7.5rem;
+    bottom: calc(env(safe-area-inset-bottom) + 0.7rem + 2.75rem + 0.15rem);
+    margin-bottom: 0;
   }
 }
 </style>

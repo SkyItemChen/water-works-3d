@@ -5,7 +5,7 @@
  * The store never holds Three objects. Everything here is markRaw/shallowRef so
  * Vue's reactivity never walks InstancedMesh matrices or typed arrays.
  */
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import { useGameStore } from '@/stores/gameStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { SceneManager } from '@/game/three/SceneManager';
@@ -29,6 +29,18 @@ const progress = useProgressStore();
 const host = ref<HTMLDivElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const error = ref('');
+
+/**
+ * Space at the top and bottom of a phone screen occupied by HUD chrome.
+ *
+ * The canvas normally fills the viewport, which put the board underneath the
+ * objectives panel and (worse) underneath the NEXT panel: cards could cover the
+ * bottom-right cells. Measuring the real panels and insetting the canvas keeps
+ * every playable cell inside the visible play area on every phone size.
+ */
+const playTop = ref(0);
+const playBottom = ref(0);
+let hudObserver: ResizeObserver | null = null;
 
 const scene = shallowRef<SceneManager | null>(null);
 const voxels = shallowRef<VoxelRenderer | null>(null);
@@ -241,8 +253,68 @@ watch(
   },
 );
 
+/**
+ * Re-measure the HUD bands and re-frame the board inside what is left.
+ *
+ * Only portrait phones use the stacked HUD; on desktop the board still fills
+ * the whole viewport. `nextTick` matters because the camera reads the canvas'
+ * client size, which changes only after Vue writes the new inset variables.
+ */
+function updatePlayInsets(): void {
+  if (!window.matchMedia('(max-width: 900px)').matches) {
+    playTop.value = 0;
+    playBottom.value = 0;
+    return;
+  }
+  const touch = document.querySelector<HTMLElement>('.touch-controls');
+  const vh = window.innerHeight;
+  let top = 0;
+  let bottom = 0;
+
+  if (window.matchMedia('(orientation: portrait)').matches) {
+    const goals = document.querySelector<HTMLElement>('.hud .goals');
+    const next = document.querySelector<HTMLElement>('.hud .next-panel');
+    const topBoundary = Math.max(
+      document.querySelector<HTMLElement>('.hud .hud-top')?.getBoundingClientRect().bottom ?? 0,
+      goals?.getBoundingClientRect().bottom ?? 0,
+    );
+    // On narrow phones the NEXT dock sits inside the empty left half of the
+    // touch bar's top row, so its top and the controls' top should agree. Taking
+    // the higher of the two keeps a little safety margin either way.
+    const bottomBoundary = Math.min(
+      next?.getBoundingClientRect().top ?? vh,
+      touch?.getBoundingClientRect().top ?? vh,
+      vh,
+    );
+    top = Math.max(0, Math.round(topBoundary + 8));
+    bottom = Math.max(0, Math.round(vh - bottomBoundary + 8));
+  } else {
+    // Landscape keeps the desktop side panels; only the touch bar crosses the
+    // bottom of the board, so reserve just that strip.
+    bottom = Math.max(0, Math.round(vh - (touch?.getBoundingClientRect().top ?? vh) + 8));
+  }
+
+  if (top === playTop.value && bottom === playBottom.value) return;
+  playTop.value = top;
+  playBottom.value = bottom;
+  nextTick(() => cameraCtl.value?.refit());
+}
+
+/** Watch the panels that change height as goals and next pieces change. */
+function watchHudBands(): void {
+  nextTick(() => {
+    updatePlayInsets();
+    hudObserver?.disconnect();
+    hudObserver = new ResizeObserver(updatePlayInsets);
+    document
+      .querySelectorAll<HTMLElement>('.hud .hud-top, .hud .goals, .hud .next-panel')
+      .forEach((el) => hudObserver?.observe(el));
+  });
+}
+
 /** Keep the front-on framing correct when the panel resizes or the phone rotates. */
 function refitCamera(): void {
+  updatePlayInsets();
   cameraCtl.value?.refit();
 }
 
@@ -317,11 +389,13 @@ watch(
 onMounted(() => {
   buildScene();
   setEnabled(true);
+  watchHudBands();
   window.addEventListener('resize', refitCamera);
 });
 
 onBeforeUnmount(() => {
   loop?.stop();
+  hudObserver?.disconnect();
   window.removeEventListener('resize', refitCamera);
   cameraCtl.value?.dispose();
   voxels.value?.dispose();
@@ -338,8 +412,15 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="host" class="canvas-host" :class="{ 'is-active': props.active }">
-    <canvas ref="canvas" class="game-canvas" aria-label="Waterworks 3D 游戏画面"></canvas>
+  <div
+    ref="host"
+    class="canvas-host"
+    :class="{ 'is-active': props.active }"
+    :style="{ '--play-top': playTop + 'px', '--play-bottom': playBottom + 'px' }"
+  >
+    <div class="play-area">
+      <canvas ref="canvas" class="game-canvas" aria-label="Waterworks 3D 游戏画面"></canvas>
+    </div>
     <div v-if="error" class="canvas-error">
       <strong>画面无法启动</strong>
       <span>{{ error }}</span>
@@ -351,10 +432,17 @@ defineExpose({
 
 <style scoped>
 .canvas-host {
+  --play-top: 0px;
+  --play-bottom: 0px;
   position: absolute;
   inset: 0;
   overflow: hidden;
   background: radial-gradient(circle at 50% 35%, #16222e 0%, #0b1118 65%, #070b10 100%);
+}
+.play-area {
+  position: absolute;
+  inset: var(--play-top) 0 var(--play-bottom);
+  overflow: hidden;
 }
 .game-canvas {
   display: block;

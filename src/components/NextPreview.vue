@@ -118,13 +118,20 @@ const blocks = computed(() =>
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
 }
 .name {
-  font-size: 0.52rem;
-  color: #94afc2;
+  font-size: 0.6rem;
+  line-height: 1.1;
+  color: #a9c3d4;
   white-space: nowrap;
 }
 @media (max-width: 900px) {
+  .preview-card {
+    gap: 0.1rem;
+    padding: 0.24rem;
+  }
   .preview-card .name {
-    display: none;
+    display: block;
+    font-size: 0.55rem;
+    line-height: 1.1;
   }
   .grid {
     grid-template-columns: repeat(var(--w), 0.42rem);
