@@ -8,11 +8,16 @@ import { useProgressStore } from '@/stores/progressStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { todayKey } from '@/game/core/daily';
 import BlockGuide from '@/components/BlockGuide.vue';
+import ChangelogPanel from '@/components/ChangelogPanel.vue';
+import { APP_VERSION } from '@/game/core/version';
 
 const store = useGameStore();
 const progress = useProgressStore();
 const tutorial = useTutorialStore();
 const code = ref('');
+const showChangelog = ref(false);
+/** Injected from package.json — never hardcode a version in the UI. */
+const version = APP_VERSION;
 
 const cleared = computed(() => progress.clearedCount);
 const totalLevels = computed(() => store.levels.length);
@@ -134,10 +139,15 @@ function loadCode(): void {
       </div>
 
       <footer class="foot">
-        <span>Waterworks 3D · v0.9 · 纯单机</span>
+        <span class="ver">
+          Waterworks 3D · v{{ version }} · 纯单机
+          <button class="changelog-link" type="button" @click="showChangelog = true">更新日志</button>
+        </span>
         <span>同种子同操作 = 完全一致的结果</span>
       </footer>
     </div>
+
+    <ChangelogPanel v-if="showChangelog" @close="showChangelog = false" />
   </div>
 </template>
 
@@ -411,6 +421,27 @@ h1 .three {
   gap: 0.5rem;
   font-size: 0.64rem;
   color: #55697a;
+}
+.foot .ver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.changelog-link {
+  padding: 0.08rem 0.42rem;
+  border-radius: 6px;
+  border: 1px solid rgba(120, 190, 230, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: #8fa9bd;
+  font: inherit;
+  font-size: 0.62rem;
+  cursor: pointer;
+  transition: 0.16s ease;
+}
+.changelog-link:hover {
+  color: #eafaff;
+  border-color: rgba(127, 233, 255, 0.5);
+  background: rgba(127, 233, 255, 0.1);
 }
 @media (max-width: 640px) {
   .cards {

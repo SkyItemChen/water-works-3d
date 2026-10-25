@@ -6,10 +6,12 @@ import { computed } from 'vue';
 import { useGameStore } from '@/stores/gameStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
+import { APP_VERSION } from '@/game/core/version';
 
 const store = useGameStore();
 const settings = useSettingsStore();
 const tutorial = useTutorialStore();
+const version = APP_VERSION;
 
 const level = computed(() => store.level);
 const inEditor = computed(() => store.mode === 'editor');
@@ -76,6 +78,8 @@ function quit(): void {
           <button @click="restart">重开本关</button>
           <button class="ghost" @click="quit">{{ inEditor ? '返回编辑器' : '返回主菜单' }}</button>
         </div>
+
+        <p class="ver">v{{ version }} · 纯单机 · 无网络请求</p>
       </div>
     </div>
   </Transition>
@@ -194,6 +198,13 @@ kbd {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+.ver {
+  margin: 0.75rem 0 0;
+  font-size: 0.62rem;
+  color: #55697a;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 button {
   flex: 1;

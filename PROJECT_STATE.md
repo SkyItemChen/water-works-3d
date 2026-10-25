@@ -1,6 +1,6 @@
 # PROJECT_STATE — Waterworks 3D
 
-> 跨会话记忆文件。只在架构级变动 / 重大模块完成 / 会话收尾时更新。上次更新：2026-10-26（60 关 + 分页解锁；终局卡死修复；新手教程改为先读后玩 + 自动推进）。
+> 跨会话记忆文件。只在架构级变动 / 重大模块完成 / 会话收尾时更新。上次更新：2026-10-26（60 关 + 分页解锁；终局卡死修复；新手教程先读后玩；版本号 + 更新日志）。
 
 ## 1. 项目定位
 - 3D 体素轻策略解谜游戏：下落地块 + **100% 确定性水流**模拟。商店标签 Strategy / Puzzle / Relaxing，定价锚点 $9.99。
@@ -22,7 +22,8 @@
 - `src/game/three/**`：唯一接触 Three 的层。`SceneManager`（场景/循环入口）、`VoxelRenderer`（固体/预览/幽灵/落块各一个 `InstancedMesh`）、`WaterRenderer`（半透明水面高度）、`CameraController`（**正面视角**：`FRONT_AZIMUTH = π/2`、`FRONT_ELEVATION = 0.16`，拖动/按键方位角锁在正面 ±0.42 内，`refit()` 按视口反算距离，`manualZoom` 保留玩家手动缩放）、`Effects`、`WowMoments`（三个哇时刻）。
 - 正面视角三条硬约束（勿回退）：①体素必须留缝（0.96/0.9 而非 1.0）+ 逐格亮度抖动，否则同材质相邻块糊成一堵墙；②背板 z=-0.82、网格线 z=-0.52、体素占 z∈[-0.45,0.45]，粒子/幽灵/落块放 z≈0.5 才能在体素前方，否则被深度测试吞掉；③落块出生在行 0 之上（允许渲染 `gy < 0`，下限 -2），取景的竖直半高按 `(rows + 2.8) / 2` 预留头部空间 —— 用 NDC 投影验证过：网格四边 + 最坏出生块顶点在所有 6 种视口比例下均 ≤ 0.9。
 - `src/stores/**`：`gameStore`（局内状态）、`settingsStore`（静音/预览步数等）、`progressStore`（关卡进度、最高分、每日记录、分享码历史、`tutorialDone`，落 localStorage）、`tutorialStore`（**教程旁路观察者**：watch `gameStore.snapshot` → 转换为离散观察 → 调 `core/tutorial.ts` 的纯谓词；不写引擎。另有落地页 `intro`、简报闸门 `holdRun`→`gameStore.coachHold`、达成后 900ms 自动进下一步）。
-- `src/components/**`：纯 UI（GameCanvas / Hud / NextPreview / TouchControls / TutorialOverlay / 各 Overlay / MainMenu / LevelSelect / DailyChallenge / ShareCodePanel / ReplayOverlay / LevelEditor）。
+- `src/components/**`：纯 UI（GameCanvas / Hud / NextPreview / TouchControls / TutorialOverlay / TutorialIntro / ChangelogPanel / 各 Overlay / MainMenu / LevelSelect / DailyChallenge / ShareCodePanel / ReplayOverlay / LevelEditor）。
+- **版本号只有一个源**：`vite.config.ts` 读 `package.json.version` → `define __APP_VERSION__`（类型见 `src/env.d.ts`）→ `core/version.ts` 导出 `APP_VERSION`。组件与测试一律读它，禁止手写版本字符串；`core/changelog.ts` 是手写更新日志（纯单机无 release feed），`tests/changelog.test.ts` 保证首条版本 == package.json 版本、按版本/日期倒序。发版只改 `package.json` + 补一条 CHANGELOG。
 - `src/game/core/blockGuide.ts` + `components/BlockGuide.vue`：主菜单「方块图鉴」。只有 role/summary/detail/caution 四段文案是手写的，名称/几何/颜色都从 `BLOCKS` 读；新增方块不补文案，`tests/blockGuide.test.ts` 直接红。
 - 游戏循环：`composables/useGameLoop.ts` 固定步长 tick + rAF 渲染；Three 对象一律 `shallowRef`，避免深度响应式。
 

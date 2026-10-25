@@ -1,0 +1,81 @@
+/**
+ * Changelog data for the in-game 更新日志 panel.
+ *
+ * Hand-written on purpose: the game ships offline with no network, so there is
+ * nowhere to fetch a release feed from, and a human-written line is worth more
+ * to a player than a commit list. Order is newest first; `APP_VERSION`
+ * (package.json) must be the head entry — `tests/changelog.test.ts` enforces it.
+ */
+
+export type ChangelogTag = '新增' | '改进' | '修复';
+
+export interface ChangelogItem {
+  tag: ChangelogTag;
+  text: string;
+}
+
+export interface ChangelogEntry {
+  /** Semver as written in package.json, without the leading v. */
+  version: string;
+  /** Release day, YYYY-MM-DD. */
+  date: string;
+  title: string;
+  items: ChangelogItem[];
+}
+
+export const CHANGELOG: readonly ChangelogEntry[] = [
+  {
+    version: '0.9.0',
+    date: '2026-10-26',
+    title: '合同战役与关卡编辑器',
+    items: [
+      { tag: '新增', text: '60 份合同关卡，每 10 关一页，通关上一关才解锁下一关。' },
+      { tag: '新增', text: '可视化关卡编辑器：地形画笔、排水口、初始水、块池与目标，可直接试玩并导出 JSON。' },
+      { tag: '新增', text: '主菜单方块图鉴，按类型说明用途、特性与风险。' },
+      { tag: '改进', text: '新手教程改为先读后玩：关掉提示水流才启动，桌面端提示居中。' },
+      { tag: '改进', text: '教程达成目标后自动进入下一步，不再需要点「下一步」；跳过只保留在教程首页。' },
+      { tag: '修复', text: '最后一块落定后画面卡死（结算判定发生在操作内，界面没收到）：现在一定会给出结果卡。' },
+      { tag: '修复', text: '教程步骤失败也会显示失败原因，并可以就地重试。' },
+      { tag: '修复', text: '手机端 HUD 与触摸条不再压住棋盘。' },
+    ],
+  },
+  {
+    version: '0.8.0',
+    date: '2026-10-25',
+    title: '手机操作与教练层',
+    items: [
+      { tag: '新增', text: '移动端触摸操作条：落块动作组 + 重开/暂停组，窄屏自动分两行。' },
+      { tag: '新增', text: '新手教程 5 步教练层：围池、注水、排水、分流，纯谓词驱动，不写引擎。' },
+      { tag: '改进', text: '管道与单向阀画出方向箭头，「沿箭头方向」终于看得见。' },
+      { tag: '修复', text: '手机上没有任何重开按钮，且「暂停」被自身的点击立刻恢复。' },
+      { tag: '修复', text: '三星块数按每关真实最少块数重设。' },
+    ],
+  },
+  {
+    version: '0.7.0',
+    date: '2026-10-23',
+    title: '首个公开版本',
+    items: [
+      { tag: '新增', text: '100% 确定性水流模拟：同种子 + 同操作 = 逐位一致的状态哈希。' },
+      { tag: '新增', text: '合同、每日挑战、无尽三种模式，本地最高分与三星记录。' },
+      { tag: '新增', text: '回放与短码分享：完整操作流，可逐 tick 复现每一格横移与下落。' },
+      { tag: '新增', text: '三步水流预览、保留槽与下一块预览。' },
+      { tag: '新增', text: 'GitHub Pages 自动部署；纯单机，无后端、无网络请求。' },
+    ],
+  },
+];
+
+/** Newest entry — the one the menu badges as the current release. */
+export function latestEntry(): ChangelogEntry | undefined {
+  return CHANGELOG[0];
+}
+
+/** Look up one release, used by tests and by the panel header. */
+export function entryFor(version: string): ChangelogEntry | undefined {
+  return CHANGELOG.find((e) => e.version === version);
+}
+
+/** The release notes for the running build, if this build has any. */
+export function notesForVersion(version: string): ChangelogEntry | undefined {
+  return entryFor(version);
+}
