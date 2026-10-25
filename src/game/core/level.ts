@@ -108,16 +108,26 @@ export function materialOf(name: keyof typeof MATERIAL_FROM_NAME): number {
 
 /** Serialize a level to the compact editor JSON format (P2 hook). */
 export function exportLevelJson(level: LevelDefinition): string {
-  return JSON.stringify(level);
+  return JSON.stringify(level, null, 2);
 }
 
 export function importLevelJson(json: string): LevelDefinition {
-  const parsed = JSON.parse(json) as LevelDefinition;
-  parsed.cols ||= DEFAULT_COLS;
-  parsed.rows ||= DEFAULT_ROWS;
-  parsed.pool ||= ['soil2', 'pocket', 'sponge'];
-  parsed.goals ||= [];
-  return parsed;
+  const parsed = JSON.parse(json) as Partial<LevelDefinition>;
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('JSON 根节点必须是一个关卡对象');
+  }
+  const base = makeEmptyLevel(typeof parsed.id === 'string' && parsed.id.trim() ? parsed.id : 'draft-import');
+  return {
+    ...base,
+    ...parsed,
+    cols: parsed.cols ?? base.cols,
+    rows: parsed.rows ?? base.rows,
+    drains: Array.isArray(parsed.drains) ? parsed.drains : base.drains,
+    terrain: Array.isArray(parsed.terrain) ? parsed.terrain : [],
+    initialWater: Array.isArray(parsed.initialWater) ? parsed.initialWater : [],
+    goals: Array.isArray(parsed.goals) ? parsed.goals : [],
+    pool: Array.isArray(parsed.pool) ? parsed.pool : base.pool,
+  } as LevelDefinition;
 }
 
 export interface EditorDraft {

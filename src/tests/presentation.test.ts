@@ -69,6 +69,7 @@ describe('presentation policy', () => {
     expect(recordActionFor('c01', 'daily')).toBe('daily');
     expect(recordActionFor('c01', 'endless')).toBe('endless');
     expect(recordActionFor('c01', 'replay')).toBe('none');
+    expect(recordActionFor('draft-1', 'editor')).toBe('none');
   });
 });
 

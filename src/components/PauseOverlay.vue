@@ -12,6 +12,7 @@ const settings = useSettingsStore();
 const tutorial = useTutorialStore();
 
 const level = computed(() => store.level);
+const inEditor = computed(() => store.mode === 'editor');
 
 function resume(): void {
   store.setPaused(false);
@@ -28,7 +29,7 @@ function quit(): void {
     tutorial.quitTutorial();
     return;
   }
-  store.toMenu();
+  store.leaveRun();
 }
 </script>
 
@@ -73,7 +74,7 @@ function quit(): void {
         <div class="actions">
           <button class="primary" @click="resume">继续游戏</button>
           <button @click="restart">重开本关</button>
-          <button class="ghost" @click="quit">返回主菜单</button>
+          <button class="ghost" @click="quit">{{ inEditor ? '返回编辑器' : '返回主菜单' }}</button>
         </div>
       </div>
     </div>

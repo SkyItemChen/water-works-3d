@@ -43,6 +43,8 @@ export const useGameStore = defineStore('game', () => {
   // --- Screen + level selection -------------------------------------------
   const screen = ref<Screen>('menu');
   const mode = ref<GameMode>('contract');
+  /** Where a custom playtest returns when the player leaves the run. */
+  const runReturnScreen = ref<Screen>('menu');
   const level = shallowRef<LevelDefinition | null>(null);
   const engine = shallowRef<GameEngine | null>(null);
 
@@ -138,6 +140,7 @@ export const useGameStore = defineStore('game', () => {
     const def = levelById(levelId);
     if (!def) return;
     audio.init();
+    runReturnScreen.value = 'menu';
     newEngine(def, 'contract');
     suppressWinPresentation.value = opts?.coached === true;
     audio.play('ui');
@@ -150,13 +153,23 @@ export const useGameStore = defineStore('game', () => {
 
   function startDaily(dateKey = todayKey()): void {
     audio.init();
+    runReturnScreen.value = 'menu';
     newEngine(dailyLevel(dateKey), 'daily');
     audio.play('ui');
   }
 
   function startEndless(): void {
     audio.init();
+    runReturnScreen.value = 'menu';
     newEngine(endlessLevel(Date.now() % 100000), 'endless');
+    audio.play('ui');
+  }
+
+  /** Play an editor draft without recording stars, scores or share history. */
+  function startCustomLevel(levelDef: LevelDefinition): void {
+    audio.init();
+    runReturnScreen.value = 'editor';
+    newEngine(levelDef, 'editor');
     audio.play('ui');
   }
 
@@ -174,7 +187,22 @@ export const useGameStore = defineStore('game', () => {
     result.value = null;
     draining.value = false;
     suppressWinPresentation.value = false;
+    runReturnScreen.value = 'menu';
     screen.value = 'menu';
+  }
+
+  /** Leave the current run and return to where it was launched from. */
+  function leaveRun(): void {
+    const target = runReturnScreen.value;
+    clearTimers();
+    engine.value = null;
+    paused.value = false;
+    showResult.value = false;
+    result.value = null;
+    draining.value = false;
+    suppressWinPresentation.value = false;
+    runReturnScreen.value = 'menu';
+    screen.value = target;
   }
 
   function openLevels(): void {
@@ -363,7 +391,7 @@ export const useGameStore = defineStore('game', () => {
     result.value = markRaw(run);
     lastWinId.value += 1;
 
-    const allowShare = publishesShareCode(e.level.id);
+    const allowShare = e.mode !== 'editor' && publishesShareCode(e.level.id);
     if (allowShare) {
       const payload: ReplayPayload = {
         v: 1,
@@ -476,8 +504,10 @@ export const useGameStore = defineStore('game', () => {
     startIndex,
     startDaily,
     startEndless,
+    startCustomLevel,
     restart,
     toMenu,
+    leaveRun,
     openLevels,
     openDaily,
     openEditor,

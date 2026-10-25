@@ -44,6 +44,8 @@ export type RecordAction = 'level' | 'daily' | 'endless' | 'none';
  * answer: coached steps never touch stars, best scores or share history.
  */
 export function recordActionFor(levelId: string, mode: GameMode): RecordAction {
+  // Editor playtests are disposable: no stars, best scores or share history.
+  if (mode === 'editor') return 'none';
   if (!recordsProgress(levelId)) return 'none';
   if (mode === 'daily') return 'daily';
   if (mode === 'endless') return 'endless';

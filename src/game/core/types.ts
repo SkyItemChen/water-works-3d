@@ -66,7 +66,7 @@ export const DIR_DX: readonly number[] = [0, 1, 0, -1];
 export const DIR_DY: readonly number[] = [-1, 0, 1, 0];
 
 export type DrainKind = 'clean' | 'dirty';
-export type GameMode = 'contract' | 'daily' | 'endless' | 'replay';
+export type GameMode = 'contract' | 'daily' | 'endless' | 'replay' | 'editor';
 export type GameStatus = 'playing' | 'won' | 'lost' | 'replay';
 
 export interface CellMeta {

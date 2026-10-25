@@ -15,6 +15,7 @@ const progress = useProgressStore();
 
 /** Tutorial runs are coached by TutorialOverlay: no result card, no share code. */
 const inTutorial = computed(() => !!store.level && isTutorialLevelId(store.level.id));
+const inEditor = computed(() => store.mode === 'editor');
 const cardVisible = computed(() => store.showResult && !!store.result && !inTutorial.value);
 
 const result = computed(() => store.result);
@@ -64,7 +65,7 @@ function retry(): void {
 
 function quit(): void {
   store.closeResult();
-  store.toMenu();
+  store.leaveRun();
 }
 </script>
 
@@ -72,7 +73,7 @@ function quit(): void {
   <Transition name="pop">
     <div v-if="cardVisible && result" class="overlay" :class="{ won, lost: !won }">
       <div class="card">
-        <div class="badge">{{ won ? '合同完成' : '合同失败' }}</div>
+        <div class="badge">{{ inEditor ? (won ? '试玩完成' : '试玩结束') : (won ? '合同完成' : '合同失败') }}</div>
         <h2>{{ won ? '水流全部归位' : '水厂停摆' }}</h2>
         <p class="reason" :class="{ bad: !won }">{{ reason }}</p>
 
@@ -113,7 +114,7 @@ function quit(): void {
           <div><span>溢出</span><b>{{ ledger.overflowed.toFixed(2) }}</b></div>
         </div>
 
-        <div v-if="won" class="share">
+        <div v-if="won && store.shareCode" class="share">
           <h3>分享你的解法</h3>
           <p>把短码发给朋友，对方输入同一短码即可回放这次通关。</p>
           <textarea :value="store.shareCode" readonly rows="2" @focus="selectCode" @click="selectCode"></textarea>
@@ -127,11 +128,11 @@ function quit(): void {
           <template v-if="won">
             <button v-if="nextIndex != null" class="primary" @click="nextLevel">下一关 →</button>
             <button @click="retry">再打一次</button>
-            <button class="ghost" @click="quit">返回主菜单</button>
+            <button class="ghost" @click="quit">{{ inEditor ? '返回编辑器' : '返回主菜单' }}</button>
           </template>
           <template v-else>
             <button class="primary" @click="retry">重试本关</button>
-            <button class="ghost" @click="quit">返回主菜单</button>
+            <button class="ghost" @click="quit">{{ inEditor ? '返回编辑器' : '返回主菜单' }}</button>
           </template>
         </div>
       </div>
