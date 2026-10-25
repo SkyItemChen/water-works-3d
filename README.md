@@ -13,7 +13,7 @@
 npm install
 npm run dev      # http://localhost:5173
 npm run build    # 类型检查 + 生产构建
-npm run test     # Vitest：104 个测试
+npm run test     # Vitest：177 个测试
 ```
 
 要求 Node 18+，浏览器需支持 WebGL2（Chrome / Edge / Firefox / Safari 15+）。
@@ -141,11 +141,11 @@ CI 使用 Node 20 + `npm ci`；构建产物 `dist/` 不入库（见 `.gitignore`
 ## 模式
 
 1. **新手教程**：5 步，见上文。不强制、可跳过，与正式关卡共用同一引擎。
-2. **合同模式**：30 个可玩关卡（数据结构支持 60 关），每 5 关引入一个新机制，末尾是组合考核与总验收。三星条件：完成目标 / 不溢出 / 剩余块数达标。
+2. **合同模式**：60 个可玩关卡，每 10 关一页，共 6 页；只能从第 1 关开始，通过上一关才解锁下一关。每 5 关引入一个新机制，末尾是组合考核与总验收。三星条件：完成目标 / 不溢出 / 剩余块数达标。
 3. **每日挑战**：日期种子 + 固定块序，本地排行榜记录最高分与最少块数，含最近 7 天打卡。
 4. **无尽模式**：水位随时间上涨，追高分。
 5. **回放 / 分享码**：通关后自动生成短码（约 60–70 字符），其他人输入即可用相同种子回放整局。
-6. **关卡编辑器（P2 预留）**：结构化关卡数据 + JSON 导入导出 + 只读棋盘预览。
+6. **关卡编辑器**：可视化绘制地形、排水口、初始水与通关目标，可调整尺寸、块池权重并直接试玩；草稿自动保存在本地，支持 JSON 导入导出。
 
 所有进度存在 `localStorage`：关卡星级与最佳分、每日排行榜、分享码历史、无尽最高分、教程已看标记、设置。
 
@@ -172,7 +172,7 @@ waterworks-3d/
       ReplayOverlay.vue         回放播放器（1x/2x/4x）
       TutorialOverlay.vue       新手教程提示气泡、步骤指示、跳过/下一步
       MainMenu.vue              主菜单
-      LevelEditor.vue           P2 只读编辑器预览
+      LevelEditor.vue           可视化关卡编辑器（绘制 / 目标 / 块池 / 试玩 / JSON）
     stores/
       gameStore.ts              运行状态、动作分发、暂停/结算/分享
       settingsStore.ts          静音、预览、画质（localStorage）
@@ -187,6 +187,8 @@ waterworks-3d/
         simulation.ts           纯函数水模拟（双缓冲、守恒）
         pressure.ts             压力、坍塌、裂缝、爆裂
         level.ts                关卡加载与校验
+        campaign.ts             关卡分页与顺序解锁
+        editor.ts               编辑器纯操作与校验
         scoring.ts              计分、星级、目标判定
         engine.ts               游戏引擎：下落、锁定、动作、胜负
         replay.ts               操作日志、紧凑回放、哈希校验
@@ -205,7 +207,7 @@ waterworks-3d/
         useGameLoop.ts          固定步长 + requestAnimationFrame
         useInput.ts             键盘输入
         useAudio.ts             WebAudio 合成音效
-    levels/levels.json          30 个合同关卡数据
+    levels/levels.json          60 个合同关卡数据
     levels/tutorial.json        5 个教程步骤（沿用同一关卡 schema）
     tests/
       simulation.test.ts        守恒、碰撞、排水计分、确定性（27）
@@ -213,7 +215,7 @@ waterworks-3d/
       replay-driver.test.ts     回放投放/停驻、引擎自然终局、副作用隔离、速度无关、v4 编码（17）
       replay-playback.test.ts   下落过程逐帧可见、进度条对齐录制时长（8）
       compact.test.ts           紧凑短码往返（2）
-      levels.test.ts            30 关可通关性（贪心机器人，2）
+      levels.test.ts            60 关可通关性（贪心机器人，2）
       modes.test.ts             每日/无尽可玩性（贪心机器人，2）
       tutorial.test.ts          谓词、状态机、跳过、旧存档、哈希不变、教程关可通关（21）
       presentation.test.ts      展示层隔离：中间步不拉远、切步相机复位、教程不写进度（11）
@@ -260,7 +262,7 @@ npm run test:watch    # 监听
 npm run typecheck     # vue-tsc --noEmit
 ```
 
-当前结果：**9 个测试文件 / 104 个测试全部通过**，其中包含用贪心机器人实际打通全部 30 个合同关卡与 5 个教程关卡的回归测试，以及「挂教程与否状态哈希逐位一致」「教程步骤不触发通关拉远」「回放由引擎自然终局且不产生副作用」「回放逐 tick 复现下落过程」四条架构守护测试。
+当前结果：**19 个测试文件 / 177 个测试全部通过**，其中包含用贪心机器人实际打通全部 60 个合同关卡与 5 个教程关卡的回归测试，以及「挂教程与否状态哈希逐位一致」「教程步骤不触发通关拉远」「回放由引擎自然终局且不产生副作用」「回放逐 tick 复现下落过程」四条架构守护测试。
 
 ---
 
@@ -280,6 +282,6 @@ npm run typecheck     # vue-tsc --noEmit
 
 ## 已知边界
 
-- 关卡编辑器为 P2 只读预览（数据结构与 JSON 导入导出已就绪）。
+- 关卡编辑器使用 `localStorage` 自动保存单份草稿；导出 JSON 可长期归档，暂不支持草稿列表管理。
 - 每日排行榜是**本地**排行榜（无后端，符合“纯单机”约束）。
 - 无外部字体/贴图/模型/音频；所有音效由 WebAudio 合成，所有视觉由程序化几何体生成。
