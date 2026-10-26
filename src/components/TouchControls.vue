@@ -87,8 +87,14 @@ function resume(): void {
     </div>
 
     <div class="group right" :class="{ disabled }">
-      <button class="tc accent" @pointerdown.prevent="press('C')" aria-label="旋转">⟳</button>
-      <button class="tc hold" @pointerdown.prevent="press('H')" aria-label="保留">H</button>
+      <button class="tc accent labeled" @pointerdown.prevent="press('C')" aria-label="旋转">
+        <span class="glyph" aria-hidden="true">⟳</span>
+        <span class="cap">旋转</span>
+      </button>
+      <button class="tc hold labeled" @pointerdown.prevent="press('H')" aria-label="保留">
+        <span class="glyph" aria-hidden="true">H</span>
+        <span class="cap">保留</span>
+      </button>
       <button class="tc drop" @pointerdown.prevent="press('A')" aria-label="硬降">⤓</button>
     </div>
   </div>
@@ -141,6 +147,22 @@ function resume(): void {
 .tc.accent {
   border-color: rgba(255, 200, 87, 0.4);
   color: #ffd98a;
+}
+.tc.labeled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.05rem;
+}
+.tc.labeled .glyph {
+  font-size: 1.08rem;
+  line-height: 1;
+}
+.tc.labeled .cap {
+  font-size: 0.56rem;
+  letter-spacing: 0.04em;
+  color: #b9c9d4;
 }
 .tc.hold {
   border-color: rgba(242, 182, 198, 0.4);
@@ -230,6 +252,12 @@ function resume(): void {
   }
   .meta-btn .glyph {
     font-size: 0.9rem;
+  }
+  .tc.labeled .glyph {
+    font-size: 0.9rem;
+  }
+  .tc.labeled .cap {
+    font-size: 0.5rem;
   }
 }
 @media (hover: hover) and (pointer: fine) and (min-width: 900px) {
