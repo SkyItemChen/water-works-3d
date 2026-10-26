@@ -1,5 +1,5 @@
 /**
- * Player-facing block descriptions for the main-menu codex.
+ * Player-facing block descriptions for the standalone block codex page.
  *
  * Pure data only: the geometry, names and colours are read from the block
  * catalogue so the guide can never drift from what actually falls in the well.
@@ -128,4 +128,3 @@ export const BLOCK_GUIDE_LIST = ALL_BLOCK_KINDS.map((kind) => ({
       ? arrowQuarterTurns(BLOCKS[kind].dir ?? 2)
       : undefined,
 }));
-

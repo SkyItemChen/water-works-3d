@@ -9,6 +9,7 @@ import GameCanvas from '@/components/GameCanvas.vue';
 import Hud from '@/components/Hud.vue';
 import MainMenu from '@/components/MainMenu.vue';
 import LevelSelect from '@/components/LevelSelect.vue';
+import BlockGuide from '@/components/BlockGuide.vue';
 import DailyChallenge from '@/components/DailyChallenge.vue';
 import LevelEditor from '@/components/LevelEditor.vue';
 import PauseOverlay from '@/components/PauseOverlay.vue';
@@ -53,6 +54,7 @@ onMounted(() => {
     <Transition name="screen" mode="out-in">
       <MainMenu v-if="store.screen === 'menu'" key="menu" />
       <LevelSelect v-else-if="store.screen === 'levels'" key="levels" />
+      <BlockGuide v-else-if="store.screen === 'guide'" key="guide" />
       <DailyChallenge v-else-if="store.screen === 'daily'" key="daily" />
       <LevelEditor v-else-if="store.screen === 'editor'" key="editor" />
       <ReplayOverlay v-else-if="store.screen === 'replay'" key="replay" />

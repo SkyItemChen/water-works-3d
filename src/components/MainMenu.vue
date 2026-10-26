@@ -7,7 +7,6 @@ import { useGameStore } from '@/stores/gameStore';
 import { useProgressStore } from '@/stores/progressStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { todayKey } from '@/game/core/daily';
-import BlockGuide from '@/components/BlockGuide.vue';
 import ChangelogPanel from '@/components/ChangelogPanel.vue';
 import { APP_VERSION } from '@/game/core/version';
 
@@ -49,10 +48,17 @@ function loadCode(): void {
     <div class="content">
       <div class="title-block">
         <span class="tag">Strategy · Puzzle · Relaxing</span>
-        <h1>
-          Waterworks
-          <span class="three">3D</span>
-        </h1>
+        <div class="title-row">
+          <h1>
+            Waterworks
+            <span class="three">3D</span>
+          </h1>
+          <button class="guide-link" type="button" @click="store.openGuide()">
+            <span class="guide-icon" aria-hidden="true">▦</span>
+            方块图鉴
+            <span class="guide-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
         <p class="tagline">每一块都在决定水的命运</p>
         <p class="blurb">
           竖井里落下体素，清水与污水在你手里分流。100% 确定性的水模拟，同种子同操作结果完全一致——所以每一次通关都可以被回放、被分享、被复盘。
@@ -119,8 +125,6 @@ function loadCode(): void {
           </div>
         </button>
       </div>
-
-      <BlockGuide />
 
       <div class="bottom-row">
         <div class="replay-box">
@@ -208,6 +212,12 @@ function loadCode(): void {
 .title-block {
   max-width: 640px;
 }
+.title-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
 .tag {
   display: inline-block;
   font-size: 0.64rem;
@@ -236,6 +246,39 @@ h1 .three {
   -webkit-text-fill-color: #ffb75e;
   vertical-align: super;
   letter-spacing: 0.02em;
+}
+.guide-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  margin-bottom: 0.25rem;
+  padding: 0.46rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(127, 233, 255, 0.3);
+  background: rgba(127, 233, 255, 0.07);
+  color: #bfeefa;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.guide-link:hover {
+  border-color: rgba(127, 233, 255, 0.62);
+  background: rgba(127, 233, 255, 0.13);
+  box-shadow: 0 0 22px rgba(127, 233, 255, 0.12);
+}
+.guide-icon {
+  font-size: 0.84rem;
+  color: #7fe9ff;
+}
+.guide-arrow {
+  color: #6d98ac;
+  transition: transform 0.16s ease;
+}
+.guide-link:hover .guide-arrow {
+  transform: translateX(2px);
 }
 .tagline {
   margin: 0.2rem 0 0.7rem;
@@ -450,6 +493,40 @@ h1 .three {
   .mode-card p {
     display: none;
   }
+  /* Keep the codex button on the title's line: at 360px the 36px title plus
+     the default pill would wrap, which reads as a separate action. */
+  .title-row {
+    gap: 0.45rem;
+  }
+  .guide-link {
+    gap: 0.26rem;
+    margin-bottom: 0.16rem;
+    padding: 0.34rem 0.5rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.02em;
+  }
+  .guide-icon {
+    font-size: 0.76rem;
+  }
+  .guide-arrow {
+    display: none;
+  }
+}
+@media (max-width: 380px) {
+  /* 320-360px: the wordmark plus the pill only fit if both lose a little
+     weight; the icon is decorative, the label is not. */
+  h1 {
+    font-size: 2rem;
+  }
+  .title-row {
+    gap: 0.35rem;
+  }
+  .guide-link {
+    padding: 0.3rem 0.44rem;
+    font-size: 0.62rem;
+  }
+  .guide-icon {
+    display: none;
+  }
 }
 </style>
-

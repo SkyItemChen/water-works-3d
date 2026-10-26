@@ -28,7 +28,7 @@ import type {
 } from '../game/core/types';
 import { useAudio } from '../game/composables/useAudio';
 
-export type Screen = 'menu' | 'levels' | 'daily' | 'game' | 'editor' | 'replay';
+export type Screen = 'menu' | 'levels' | 'guide' | 'daily' | 'game' | 'editor' | 'replay';
 
 export interface ReplaySession {
   payload: ReplayPayload;
@@ -234,6 +234,11 @@ export const useGameStore = defineStore('game', () => {
 
   function openLevels(): void {
     screen.value = 'levels';
+    audio.play('ui');
+  }
+
+  function openGuide(): void {
+    screen.value = 'guide';
     audio.play('ui');
   }
 
@@ -567,6 +572,7 @@ export const useGameStore = defineStore('game', () => {
     toMenu,
     leaveRun,
     openLevels,
+    openGuide,
     openDaily,
     openEditor,
     togglePause,
@@ -586,4 +592,3 @@ export const useGameStore = defineStore('game', () => {
     consumeFx,
   };
 });
-
