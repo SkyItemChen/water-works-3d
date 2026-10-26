@@ -25,6 +25,8 @@ const lockedHint = ref('');
 
 const levels = computed(() => store.levels);
 const totalStars = computed(() => progress.totalStars);
+const totalScore = computed(() => progress.totalScore);
+const totalScoreText = computed(() => totalScore.value.toLocaleString('en-US'));
 const maxStars = computed(() => levels.value.length * 3);
 const pages = computed(() => campaignPageCount(levels.value.length));
 
@@ -82,10 +84,16 @@ function back(): void {
         <h1>水厂委托</h1>
         <p>{{ levels.length }} 份合同 · 每 {{ LEVELS_PER_PAGE }} 关一页 · 通过上一关解锁下一关</p>
       </div>
-      <div class="star-total">
-        <span>★</span>
-        <b>{{ totalStars }}</b>
-        <em>/ {{ maxStars }}</em>
+      <div class="head-stats">
+        <div class="star-total" title="总星数">
+          <span>★</span>
+          <b>{{ totalStars }}</b>
+          <em>/ {{ maxStars }}</em>
+        </div>
+        <div class="score-total" title="累计总分">
+          <span>总分</span>
+          <b>{{ totalScoreText }}</b>
+        </div>
       </div>
     </header>
 
@@ -206,6 +214,31 @@ h1 {
   border: 1px solid rgba(255, 209, 102, 0.24);
   border-radius: 10px;
   padding: 0.45rem 0.7rem;
+}
+.head-stats {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.score-total {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  background: rgba(127, 233, 255, 0.08);
+  border: 1px solid rgba(127, 233, 255, 0.24);
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+}
+.score-total span {
+  color: #7fe9ff;
+  font-size: 0.76rem;
+}
+.score-total b {
+  color: #7fe9ff;
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
 }
 .star-total span {
   color: #ffd166;
@@ -458,7 +491,7 @@ h2 {
   .back {
     order: 1;
   }
-  .star-total {
+  .head-stats {
     order: 0;
   }
   .page-tab {

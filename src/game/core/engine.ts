@@ -759,6 +759,36 @@ export class GameEngine {
 
   // --- Introspection -------------------------------------------------------
 
+  /**
+   * Exact deep copy of the engine, including the bag's PRNG position.
+   *
+   * The score solver (core/solver.ts) branches on placements and needs a state
+   * it can mutate freely. Render-only fields (hardDrop trails, last events,
+   * preview) are deliberately dropped: they must never influence the result.
+   */
+  clone(): GameEngine {
+    const c: GameEngine = Object.assign(Object.create(GameEngine.prototype), this);
+    c.grid = this.grid.slice();
+    c.clean = this.clean.slice();
+    c.dirty = this.dirty.slice();
+    c.pressure = this.pressure.slice();
+    c.meta = this.meta.map((m) => ({ ...m }));
+    c.bag = this.bag.clone();
+    c.next = this.next.slice();
+    c.piece = this.piece ? { ...this.piece, cells: this.piece.cells.map((k) => ({ ...k })) } : null;
+    c.ledger = { ...this.ledger };
+    c.drainClean = this.drainClean.slice();
+    c.drainDirty = this.drainDirty.slice();
+    c.goals = this.goals.map((g) => ({ ...g }));
+    c.dangerCols = this.dangerCols.slice();
+    c.mixture = this.mixture.slice();
+    c.ops = this.ops.slice();
+    c.placements = this.placements.slice();
+    c.hardDrops = [];
+    c.lastEvents = [];
+    return c;
+  }
+
   preview(steps = 3): SimPreview {
     const res = previewFlow(
       this.grid,

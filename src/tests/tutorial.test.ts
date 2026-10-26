@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GameEngine } from '../game/core/engine';
 import { isTutorialLevelId, levelById, tutorialLevels } from '../game/core/level';
+import { decodeStoredProgress } from '../game/core/saveFile';
 import {
   advanceTutorial,
   buildObservation,
@@ -311,7 +312,9 @@ describe('tutorial persistence', () => {
     expect(p.tutorialIsNew).toBe(false);
     const raw = store['waterworks3d.progress.v1'];
     expect(raw).toBeTruthy();
-    expect(JSON.parse(raw).tutorialDone).toBe(true);
+    // Stored value is the compact save text (arrays + base64), not JSON any more.
+    expect(raw.startsWith('WWSAVE1:')).toBe(true);
+    expect(decodeStoredProgress(raw)?.progress.tutorialDone).toBe(true);
   });
 
   it('the skip path marks the tutorial done', async () => {
@@ -331,7 +334,7 @@ describe('tutorial persistence', () => {
     p.markTutorialDone();
     await Promise.resolve();
     expect(p.tutorialDone).toBe(true);
-    expect(JSON.parse(store['waterworks3d.progress.v1']).tutorialDone).toBe(true);
+    expect(decodeStoredProgress(store['waterworks3d.progress.v1'])?.progress.tutorialDone).toBe(true);
   });
 });
 

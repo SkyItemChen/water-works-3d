@@ -11,6 +11,9 @@ import MainMenu from '@/components/MainMenu.vue';
 import LevelSelect from '@/components/LevelSelect.vue';
 import BlockGuide from '@/components/BlockGuide.vue';
 import DailyChallenge from '@/components/DailyChallenge.vue';
+import ChallengePanel from '@/components/ChallengePanel.vue';
+import AchievementPanel from '@/components/AchievementPanel.vue';
+import AchievementToast from '@/components/AchievementToast.vue';
 import LevelEditor from '@/components/LevelEditor.vue';
 import PauseOverlay from '@/components/PauseOverlay.vue';
 import ResultOverlay from '@/components/ResultOverlay.vue';
@@ -56,9 +59,13 @@ onMounted(() => {
       <LevelSelect v-else-if="store.screen === 'levels'" key="levels" />
       <BlockGuide v-else-if="store.screen === 'guide'" key="guide" />
       <DailyChallenge v-else-if="store.screen === 'daily'" key="daily" />
+      <ChallengePanel v-else-if="store.screen === 'challenge'" key="challenge" />
+      <AchievementPanel v-else-if="store.screen === 'achievements'" key="achievements" />
       <LevelEditor v-else-if="store.screen === 'editor'" key="editor" />
       <ReplayOverlay v-else-if="store.screen === 'replay'" key="replay" />
     </Transition>
+
+    <AchievementToast />
 
     <template v-if="inGame">
       <Hud />

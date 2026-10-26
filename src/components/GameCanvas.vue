@@ -364,8 +364,12 @@ watch(
     if (!lvl) return;
     // Tutorial levels are coaching, not contracts: they must not pollute the
     // contract star/score records or the share history.
-    const bucket = recordActionFor(lvl.id, store.mode);
-    if (bucket === 'none') return;
+    // Challenge runs are the same level plus a score bar: they must not touch
+    // contract stars / best scores (see recordActionFor).
+    const bucket = recordActionFor(lvl.id, store.mode, store.isChallenge);
+    // 'none' still falls through to the share history below: a challenge win
+    // keeps its own code (sharing is not a score record), while tutorial and
+    // editor runs never get a code in the first place.
     if (bucket === 'level') {
       progress.recordLevel(lvl.id, res.stars, res.score, res.blocksUsed, res.won);
     } else if (bucket === 'daily') {

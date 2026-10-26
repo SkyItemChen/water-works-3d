@@ -121,6 +121,10 @@ function fmt(v: number, digits = 1): string {
         <span>得分</span>
         <strong>{{ score }}</strong>
       </div>
+      <div v-if="store.isChallenge" class="score-row target-row">
+        <span>挑战目标</span>
+        <strong :class="{ met: score >= store.challengeTarget }">{{ store.challengeTarget }}</strong>
+      </div>
     </section>
 
     <section class="panel ledger">
@@ -348,6 +352,17 @@ h1 {
   font-size: 1.05rem;
   color: #ffd28a;
   font-variant-numeric: tabular-nums;
+}
+.score-row.target-row {
+  margin-top: 0;
+  padding-top: 0.05rem;
+  border-top: 0;
+}
+.score-row.target-row strong {
+  color: #7fe9ff;
+}
+.score-row.target-row strong.met {
+  color: #8ef0b6;
 }
 .ledger {
   grid-column: 1;

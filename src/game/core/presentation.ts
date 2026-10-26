@@ -43,7 +43,13 @@ export type RecordAction = 'level' | 'daily' | 'endless' | 'none';
  * Which progress bucket a finished run belongs to. `'none'` is the tutorial
  * answer: coached steps never touch stars, best scores or share history.
  */
-export function recordActionFor(levelId: string, mode: GameMode): RecordAction {
+/**
+ * `challenge` is the second `'none'`: a challenge run is the same board with a
+ * score bar bolted on, so it must never feed the contract's stars, best scores or
+ * lifetime score — otherwise the challenge list doubles as a star farm.
+ */
+export function recordActionFor(levelId: string, mode: GameMode, challenge = false): RecordAction {
+  if (challenge) return 'none';
   // Editor playtests are disposable: no stars, best scores or share history.
   if (mode === 'editor') return 'none';
   if (!recordsProgress(levelId)) return 'none';

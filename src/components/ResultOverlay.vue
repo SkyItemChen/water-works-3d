@@ -33,9 +33,21 @@ const cardVisible = computed(() => {
 const result = computed(() => store.result);
 const won = computed(() => !!result.value?.won);
 const stars = computed(() => result.value?.stars ?? 0);
+/** Challenge verdict: the score bar, not the contract goals, decides. */
+const isChallenge = computed(() => !!store.challengeId);
+const challengeTarget = computed(() => store.challengeTarget);
+const challengeCleared = computed(() => store.challengeOutcome === 'cleared');
+const challengeShort = computed(
+  () => isChallenge.value && !!result.value?.won && !challengeCleared.value,
+);
 const reason = computed(() => {
   const r = result.value;
   if (!r) return '';
+  if (isChallenge.value) {
+    if (!r.won) return r.reason || '挑战失败：合同本身没有完成。';
+    if (challengeCleared.value) return '达标。这就是这个关卡的已知最高分。';
+    return `还差 ${Math.max(0, challengeTarget.value - r.score)} 分：目标 ${challengeTarget.value}，本局 ${r.score}。`;
+  }
   if (r.won) return '合同达成，最后一批水已经排空。';
   return r.reason || '合同失败';
 });
@@ -75,6 +87,21 @@ function retry(): void {
   store.restart();
 }
 
+function concede(): void {
+  store.concedeChallenge();
+}
+
+async function shareOfficial(): Promise<void> {
+  if (!store.challengeCode) return;
+  const ok = await copyToClipboard(store.challengeCode);
+  store.shareFeedback = ok ? '官方回放码已复制' : '复制失败，请手动选择文本';
+  setTimeout(() => (store.shareFeedback = ''), 2200);
+}
+
+function watchOfficial(): void {
+  if (store.challengeCode) store.loadReplayCode(store.challengeCode);
+}
+
 function quit(): void {
   store.closeResult();
   // Leaving a failed tutorial step means leaving the tutorial: the coach would
@@ -88,8 +115,26 @@ function quit(): void {
   <Transition name="pop">
     <div v-if="cardVisible && result" class="overlay" :class="{ won, lost: !won }">
       <div class="card">
-        <div class="badge">{{ inEditor ? (won ? '试玩完成' : '试玩结束') : (won ? '合同完成' : '合同失败') }}</div>
-        <h2>{{ won ? '水流全部归位' : '水厂停摆' }}</h2>
+        <div class="badge">
+          {{
+            inEditor
+              ? won
+                ? '试玩完成'
+                : '试玩结束'
+              : isChallenge
+                ? challengeCleared
+                  ? '挑战通过'
+                  : won
+                    ? '未达目标'
+                    : '挑战失败'
+                : won
+                  ? '合同完成'
+                  : '合同失败'
+          }}
+        </div>
+        <h2>
+          {{ isChallenge ? (challengeCleared ? '最优解达成' : won ? '差一点' : '水厂停摆') : won ? '水流全部归位' : '水厂停摆' }}
+        </h2>
         <p class="reason" :class="{ bad: !won }">{{ reason }}</p>
 
         <div v-if="won" class="stars" aria-label="星级">
@@ -113,6 +158,44 @@ function quit(): void {
             <span>历史最佳</span>
             <b>{{ bestScore }}</b>
           </div>
+          <div v-if="isChallenge">
+            <span>挑战目标</span>
+            <b class="target">{{ challengeTarget }}</b>
+          </div>
+        </div>
+
+        <div v-if="isChallenge" class="challenge-box" :class="{ passed: challengeCleared }">
+          <template v-if="challengeCleared">
+            <b>✔ 挑战达成</b>
+            <p>目标 {{ challengeTarget }}，本局 {{ result.score }}。</p>
+          </template>
+          <template v-else>
+            <b>{{ challengeShort ? '目标分未达成' : '这一局没走完' }}</b>
+            <p v-if="challengeShort">
+              只完成合同不算通过：得打到 {{ challengeTarget }} 分。认输会记一次，并直接给你这一关的官方回放码。
+            </p>
+            <p v-else>
+              合同本身先失败了（{{ result.reason || '未能完成合同' }}）。目标分是 {{ challengeTarget }}，
+              也可以直接认输，看官方是怎么走完的。
+            </p>
+            <button v-if="!store.challengeConceded" class="concede" @click="concede">
+              认输 · 查看官方回放码
+            </button>
+            <template v-else>
+              <textarea
+                :value="store.challengeCode"
+                readonly
+                rows="2"
+                @focus="selectCode"
+                @click="selectCode"
+              ></textarea>
+              <div class="share-actions">
+                <button class="primary sm" @click="shareOfficial">复制回放码</button>
+                <button class="ghost sm" @click="watchOfficial">看官方回放</button>
+                <span class="feedback">{{ store.shareFeedback }}</span>
+              </div>
+            </template>
+          </template>
         </div>
 
         <ul class="goals">
@@ -140,7 +223,11 @@ function quit(): void {
         </div>
 
         <div class="actions">
-          <template v-if="won">
+          <template v-if="isChallenge">
+            <button v-if="!challengeCleared" class="primary" @click="retry">再挑战一次</button>
+            <button @click="quit">返回挑战列表</button>
+          </template>
+          <template v-else-if="won">
             <button v-if="nextIndex != null" class="primary" @click="nextLevel">下一关 →</button>
             <button @click="retry">再打一次</button>
             <button class="ghost" @click="quit">{{ inEditor ? '返回编辑器' : '返回主菜单' }}</button>
@@ -185,6 +272,56 @@ function quit(): void {
 }
 .overlay.lost .card {
   border-color: rgba(255, 110, 120, 0.3);
+}
+.challenge-box {
+  margin: 0.9rem 0 0.2rem;
+  padding: 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 183, 94, 0.32);
+  background: rgba(255, 183, 94, 0.07);
+}
+.challenge-box.passed {
+  border-color: rgba(110, 231, 160, 0.4);
+  background: rgba(110, 231, 160, 0.08);
+}
+.challenge-box b {
+  font-size: 0.8rem;
+  color: #ffd7a1;
+}
+.challenge-box.passed b {
+  color: #8ef0b6;
+}
+.challenge-box p {
+  margin: 0.3rem 0 0.6rem;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: #a8bccb;
+}
+.challenge-box textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(120, 190, 230, 0.24);
+  border-radius: 9px;
+  color: #cdefff;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.7rem;
+  padding: 0.5rem;
+  resize: none;
+}
+.concede {
+  padding: 0.45rem 0.85rem;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 183, 94, 0.45);
+  background: rgba(255, 183, 94, 0.14);
+  color: #ffd7a1;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+.concede:hover {
+  background: rgba(255, 183, 94, 0.24);
+}
+.stats .target {
+  color: #7fe9ff;
 }
 .badge {
   display: inline-block;

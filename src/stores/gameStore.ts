@@ -15,6 +15,8 @@ import { publishesShareCode, recordsProgress } from '../game/core/presentation';
 import { dailyLevel, todayKey } from '../game/core/daily';
 import { buildRunResult } from '../game/core/replay';
 import { decodeShareCode, encodeShareCode } from '../game/core/shareCode';
+import { challengeEntry } from '../game/core/challenge';
+import { useProgressStore } from './progressStore';
 import { drainScore, finalScore } from '../game/core/scoring';
 import type {
   EngineSnapshot,
@@ -28,7 +30,23 @@ import type {
 } from '../game/core/types';
 import { useAudio } from '../game/composables/useAudio';
 
-export type Screen = 'menu' | 'levels' | 'guide' | 'daily' | 'game' | 'editor' | 'replay';
+export type Screen =
+  | 'menu'
+  | 'levels'
+  | 'guide'
+  | 'daily'
+  | 'game'
+  | 'editor'
+  | 'replay'
+  | 'challenge'
+  | 'achievements';
+
+/** A challenge run: the campaign level plus the score bar it has to beat. */
+export interface ChallengeRun {
+  id: string;
+  target: number;
+  code: string;
+}
 
 export interface ReplaySession {
   payload: ReplayPayload;
@@ -43,6 +61,16 @@ export const useGameStore = defineStore('game', () => {
   // --- Screen + level selection -------------------------------------------
   const screen = ref<Screen>('menu');
   const mode = ref<GameMode>('contract');
+  const progress = useProgressStore();
+  /**
+   * Challenge mode state. Deliberately outside GameMode: engine, replay payloads
+   * and presentation policies all treat a challenge run as a normal contract
+   * run. The score bar is a UI verdict on top of the run, never a rule.
+   */
+  const challengeId = ref<string | null>(null);
+  const challengeTarget = ref(0);
+  const challengeCode = ref('');
+  const challengeConceded = ref(false);
   /** Where a custom playtest returns when the player leaves the run. */
   const runReturnScreen = ref<Screen>('menu');
   const level = shallowRef<LevelDefinition | null>(null);
@@ -115,6 +143,13 @@ export const useGameStore = defineStore('game', () => {
     );
   });
   const isEndless = computed(() => mode.value === 'endless');
+  const isChallenge = computed(() => challengeId.value !== null);
+  /** Verdict of the finished challenge run ('' while none is loaded). */
+  const challengeOutcome = computed<'cleared' | 'short' | 'lost' | ''>(() => {
+    if (!challengeId.value || !result.value) return '';
+    if (!result.value.won) return 'lost';
+    return result.value.score >= challengeTarget.value ? 'cleared' : 'short';
+  });
   const previewEnabled = ref(true);
 
   function clearTimers(): void {
@@ -125,7 +160,11 @@ export const useGameStore = defineStore('game', () => {
   }
 
   // --- Lifecycle -----------------------------------------------------------
-  function newEngine(levelDef: LevelDefinition, gameMode: GameMode): GameEngine {
+  function newEngine(
+    levelDef: LevelDefinition,
+    gameMode: GameMode,
+    challenge: ChallengeRun | null = null,
+  ): GameEngine {
     clearTimers();
     paused.value = false;
     showResult.value = false;
@@ -139,6 +178,10 @@ export const useGameStore = defineStore('game', () => {
     pendingFx.length = 0;
     level.value = markRaw(levelDef);
     mode.value = gameMode;
+    challengeId.value = challenge?.id ?? null;
+    challengeTarget.value = challenge?.target ?? 0;
+    challengeCode.value = challenge?.code ?? '';
+    challengeConceded.value = false;
     suppressWinPresentation.value = false;
     coachedRun = false;
     const e = new GameEngine({ level: levelDef, mode: gameMode });
@@ -163,6 +206,17 @@ export const useGameStore = defineStore('game', () => {
     newEngine(def, 'contract');
     coachedRun = opts?.coached === true;
     suppressWinPresentation.value = coachedRun;
+    audio.play('ui');
+  }
+
+  /** Play a campaign level again, with its best-known score as the bar. */
+  function startChallenge(id: string): void {
+    const def = levelById(id);
+    const entry = challengeEntry(id);
+    if (!def || !entry) return;
+    audio.init();
+    runReturnScreen.value = 'challenge';
+    newEngine(def, 'contract', { id, target: entry.target, code: entry.code });
     audio.play('ui');
   }
 
@@ -196,7 +250,10 @@ export const useGameStore = defineStore('game', () => {
   function restart(): void {
     if (!level.value) return;
     const coached = coachedRun;
-    newEngine(level.value, mode.value);
+    const challenge = challengeId.value
+      ? { id: challengeId.value, target: challengeTarget.value, code: challengeCode.value }
+      : null;
+    newEngine(level.value, mode.value, challenge);
     // A retry of an intermediate tutorial step is still a coached step: losing
     // its coaching flag would make the retry end in a contract-style result card.
     if (coached) {
@@ -230,6 +287,26 @@ export const useGameStore = defineStore('game', () => {
     suppressWinPresentation.value = false;
     runReturnScreen.value = 'menu';
     screen.value = target;
+  }
+
+  function openChallenge(): void {
+    screen.value = 'challenge';
+    audio.play('ui');
+  }
+
+  function openAchievements(): void {
+    screen.value = 'achievements';
+    audio.play('ui');
+  }
+
+  /** Concede a failed challenge: unlock the official line and record it. */
+  function concedeChallenge(): boolean {
+    const id = challengeId.value;
+    if (!id || challengeConceded.value) return false;
+    challengeConceded.value = true;
+    progress.concedeChallenge(id);
+    audio.play('ui');
+    return true;
   }
 
   function openLevels(): void {
@@ -419,6 +496,13 @@ export const useGameStore = defineStore('game', () => {
   }
 
   // --- End of run ----------------------------------------------------------
+  /** A challenge run banks its verdict here; normal runs are ignored. */
+  function recordChallengeVerdict(run: RunResult): void {
+    const id = challengeId.value;
+    if (!id) return;
+    progress.recordChallenge(id, run.score, run.won && run.score >= challengeTarget.value);
+  }
+
   function onWin(): void {
     const e = engine.value;
     if (!e) return;
@@ -427,6 +511,7 @@ export const useGameStore = defineStore('game', () => {
     const run = buildRunResult(e);
     result.value = markRaw(run);
     lastWinId.value += 1;
+    recordChallengeVerdict(run);
 
     const allowShare = e.mode !== 'editor' && publishesShareCode(e.level.id);
     if (allowShare) {
@@ -471,6 +556,7 @@ export const useGameStore = defineStore('game', () => {
     const run = buildRunResult(e);
     result.value = markRaw(run);
     showResult.value = true;
+    recordChallengeVerdict(run);
   }
 
   /**
@@ -563,6 +649,16 @@ export const useGameStore = defineStore('game', () => {
     liveScore,
     isEndless,
     // actions
+    challengeId,
+    challengeTarget,
+    challengeCode,
+    challengeConceded,
+    isChallenge,
+    challengeOutcome,
+    startChallenge,
+    openChallenge,
+    openAchievements,
+    concedeChallenge,
     startLevel,
     startIndex,
     startDaily,

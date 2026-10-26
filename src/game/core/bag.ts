@@ -202,30 +202,53 @@ export class Bag {
   private rng: Rng;
   private pool: BlockKind[];
   private queue: BlockKind[] = [];
+  /** how many numbers the PRNG has handed out, so clone() can fast-forward */
+  private draws = 0;
+  private readonly seedNum: number;
 
   constructor(
     private readonly allowed: BlockKind[],
     seed: number,
     private readonly bagSize = 7,
   ) {
+    this.seedNum = seed;
     this.pool = allowed.length > 0 ? allowed.slice() : ['soil2'];
     this.rng = makeRng(seed, 'bag');
     this.refill();
   }
 
   private refill(): void {
+    const r = (): number => {
+      this.draws++;
+      return this.rng();
+    };
     const bag: BlockKind[] = [];
     for (let i = 0; i < this.bagSize; i++) {
-      bag.push(this.pool[Math.floor(this.rng() * this.pool.length) % this.pool.length]);
+      bag.push(this.pool[Math.floor(r() * this.pool.length) % this.pool.length]);
     }
     // Fisher-Yates with the same rng.
     for (let i = bag.length - 1; i > 0; i--) {
-      const j = Math.floor(this.rng() * (i + 1));
+      const j = Math.floor(r() * (i + 1));
       const tmp = bag[i];
       bag[i] = bag[j];
       bag[j] = tmp;
     }
     this.queue.push(...bag);
+  }
+
+  /**
+   * Exact copy including the PRNG position.
+   * The engine's score solver branches on placements, so it needs identical
+   * future piece sequences without replaying the run from tick 0.
+   */
+  clone(): Bag {
+    const copy = new Bag(this.allowed, this.seedNum, this.bagSize);
+    while (copy.draws < this.draws) {
+      copy.rng();
+      copy.draws++;
+    }
+    copy.queue = this.queue.slice();
+    return copy;
   }
 
   next(): BlockKind {

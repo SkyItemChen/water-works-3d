@@ -8,6 +8,7 @@ import { useProgressStore } from '@/stores/progressStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { todayKey } from '@/game/core/daily';
 import ChangelogPanel from '@/components/ChangelogPanel.vue';
+import SettingsPanel from '@/components/SettingsPanel.vue';
 import { APP_VERSION } from '@/game/core/version';
 
 const store = useGameStore();
@@ -15,12 +16,14 @@ const progress = useProgressStore();
 const tutorial = useTutorialStore();
 const code = ref('');
 const showChangelog = ref(false);
+const showSettings = ref(false);
 /** Injected from package.json — never hardcode a version in the UI. */
 const version = APP_VERSION;
 
 const cleared = computed(() => progress.clearedCount);
 const totalLevels = computed(() => store.levels.length);
 const stars = computed(() => progress.totalStars);
+const score = computed(() => progress.totalScore.toLocaleString('en-US'));
 const todayBest = computed(() => progress.dailyBest(todayKey()));
 /** Missing field on old saves reads as "not seen", so the badge shows once. */
 const tutorialIsNew = computed(() => progress.tutorialIsNew);
@@ -58,6 +61,14 @@ function loadCode(): void {
             方块图鉴
             <span class="guide-arrow" aria-hidden="true">→</span>
           </button>
+          <button class="guide-link" type="button" @click="store.openAchievements()">
+            <span class="guide-icon" aria-hidden="true">◆</span>
+            成就
+          </button>
+          <button class="guide-link" type="button" aria-label="设置" @click="showSettings = true">
+            <span class="guide-icon" aria-hidden="true">⚙</span>
+            设置
+          </button>
         </div>
         <p class="tagline">每一块都在决定水的命运</p>
         <p class="blurb">
@@ -92,6 +103,21 @@ function loadCode(): void {
           <div class="stat">
             <span>{{ cleared }}/{{ totalLevels }} 通关</span>
             <span>★ {{ stars }}/{{ totalLevels * 3 }}</span>
+            <span>总分 {{ score }}</span>
+          </div>
+        </button>
+
+        <button class="mode-card challenge" @click="store.openChallenge()">
+          <div class="icon">🎯</div>
+          <h2>
+            挑战模式
+            <span class="badge-new">新</span>
+          </h2>
+          <p>60 关全部开放。过关条件就是离线求解器算出的最高分，差一分都不算过；卡住可以认输换官方回放码。</p>
+          <div class="stat">
+            <span>{{ progress.challengeClearedCount }}/{{ progress.challengeTotal }} 达标</span>
+            <span>认输 {{ progress.challengeConcededCount }}</span>
+            <span>成就 {{ progress.achievementCount }}/{{ progress.achievementList.length }}</span>
           </div>
         </button>
 
@@ -152,6 +178,7 @@ function loadCode(): void {
     </div>
 
     <ChangelogPanel v-if="showChangelog" @close="showChangelog = false" />
+    <SettingsPanel v-if="showSettings" @close="showSettings = false" />
   </div>
 </template>
 
@@ -344,6 +371,12 @@ h1 .three {
   border-color: rgba(127, 233, 255, 0.42);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
 }
+.mode-card.challenge {
+  background: linear-gradient(160deg, rgba(24, 46, 40, 0.92), rgba(9, 18, 15, 0.92));
+}
+.mode-card.challenge:hover {
+  border-color: rgba(126, 226, 168, 0.5);
+}
 .mode-card.daily {
   background: linear-gradient(160deg, rgba(45, 36, 24, 0.92), rgba(15, 12, 9, 0.92));
 }
@@ -393,6 +426,8 @@ h1 .three {
 .stat {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.5rem;
   font-size: 0.64rem;
   color: #6d8394;
   border-top: 1px dashed rgba(120, 190, 230, 0.14);

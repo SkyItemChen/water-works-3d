@@ -1,7 +1,7 @@
 {
   "name": "waterworks-3d",
   "private": true,
-  "version": "0.9.0",
+  "version": "0.10.0",
   "type": "module",
   "description": "Waterworks 3D — a deterministic voxel water puzzle game",
   "scripts": {
@@ -10,6 +10,10 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "verify": "node node_modules/esbuild/bin/esbuild scripts/verify-code.mts --bundle --platform=node --format=esm --outfile=.solver/verify.mjs --log-level=warning && node .solver/verify.mjs",
+    "merge:scores": "node node_modules/esbuild/bin/esbuild scripts/merge-scores.mts --bundle --platform=node --format=esm --outfile=.solver/merge.mjs --log-level=warning && node .solver/merge.mjs",
+    "gen:challenge": "node node_modules/esbuild/bin/esbuild scripts/gen-challenge.mts --bundle --platform=node --format=esm --outfile=.solver/gen.mjs --log-level=warning && node .solver/gen.mjs",
+    "solve": "node node_modules/esbuild/bin/esbuild scripts/solve.mts --bundle --platform=node --format=esm --outfile=.solver/solve.mjs --log-level=warning && node .solver/solve.mjs",
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
