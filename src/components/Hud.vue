@@ -8,7 +8,9 @@ import { useGameStore } from '@/stores/gameStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { BLOCKS } from '@/game/core/bag';
 import { arrowQuarterTurns } from '@/game/core/blockGuide';
+import { currentPieceInfo } from '@/game/core/pieceInfo';
 import NextPreview from './NextPreview.vue';
+import CurrentPiecePanel from './CurrentPiecePanel.vue';
 import type { BlockKind } from '@/game/core/types';
 
 const store = useGameStore();
@@ -59,6 +61,8 @@ const holdArrow = computed(() => {
 });
 
 const goalList = computed(() => snap.value?.goals ?? []);
+/** Post-rotation cells from the engine: updates immediately on move/rotate. */
+const currentPiece = computed(() => currentPieceInfo(snap.value?.piece ?? null));
 
 const ledgerBalanced = computed(() => {
   const l = ledger.value;
@@ -134,6 +138,8 @@ function fmt(v: number, digits = 1): string {
       </p>
     </section>
 
+    <CurrentPiecePanel :info="currentPiece" />
+
     <section class="panel vitals">
       <h2>压力 / 水位</h2>
       <div class="meter">
@@ -202,7 +208,7 @@ function fmt(v: number, digits = 1): string {
   z-index: 10;
   display: grid;
   grid-template-columns: minmax(190px, 220px) 1fr minmax(190px, 220px);
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   gap: 0.7rem;
   padding: 0.8rem;
   color: var(--text, #e9f2f8);
@@ -382,6 +388,10 @@ h1 {
 }
 .vitals {
   grid-column: 3;
+  grid-row: 3;
+}
+.current-piece {
+  grid-column: 3;
   grid-row: 2;
 }
 .meter {
@@ -459,7 +469,7 @@ h1 {
 }
 .next-panel {
   grid-column: 3;
-  grid-row: 3;
+  grid-row: 4;
   align-self: end;
 }
 .next-row {
@@ -527,7 +537,7 @@ h1 {
 }
 .hud-keys {
   grid-column: 2;
-  grid-row: 3;
+  grid-row: 4;
   justify-self: center;
   align-self: end;
   display: flex;
@@ -545,12 +555,13 @@ h1 {
 @media (max-width: 900px) and (orientation: portrait) {
   .hud {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-rows: auto auto 1fr auto auto;
     font-size: 0.75rem;
   }
   .panel.goals,
   .panel.vitals,
   .panel.ledger,
+  .panel.current-piece,
   .panel.next-panel {
     grid-column: 1;
     grid-row: auto;
@@ -558,6 +569,15 @@ h1 {
   .panel.vitals,
   .panel.ledger {
     display: none;
+  }
+  /* Compact one-line strip directly above the Next dock: enough to identify
+     the falling piece and its footprint without hiding the well. */
+  .current-piece {
+    justify-self: stretch;
+    min-width: 0;
+    padding: 0.3rem 0.55rem;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .hud-keys {
     display: none;
